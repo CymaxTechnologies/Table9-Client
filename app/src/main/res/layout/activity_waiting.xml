@@ -89,14 +89,46 @@
 
     </androidx.cardview.widget.CardView>
 
-    <ImageButton
-        android:id="@+id/pic"
-        android:layout_width="match_parent"
-        android:layout_height="600px"
-        android:background="@drawable/card"
-        android:src="@color/colorPrimary">
+ <LinearLayout
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:gravity="center"
+     android:orientation="vertical">
+     <ImageButton
+         android:id="@+id/pic"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:background="@drawable/card"
+         android:src="@color/colorPrimary">
 
-    </ImageButton>
+     </ImageButton>
+     <TextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Your food is being prepared"
+         android:textColor="@color/colorPrimary">
+
+     </TextView>
+ </LinearLayout>
+    <LinearLayout
+        android:weightSum="2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -111,7 +143,8 @@
             android:text="Ask Cutlerry"
             android:id="@+id/ask_cutlerry"
             android:layout_margin="5dp"
-            android:background="@drawable/card">
+            android:textColor="@android:color/white"
+            android:background="@color/colorPrimary">
 
         </Button>
         <Button
@@ -121,7 +154,8 @@
             android:layout_height="match_parent"
             android:text="Call waiter"
             android:id="@+id/call_waiter"
-            android:background="@drawable/card">
+            android:textColor="@android:color/white"
+            android:background="@color/colorPrimary">
 
         </Button>
         <Button
@@ -131,7 +165,8 @@
             android:layout_height="match_parent"
             android:text="Report Problem"
             android:id="@+id/report_problem"
-            android:background="@drawable/card">
+            android:textColor="@android:color/white"
+            android:background="@color/colorPrimary">
 
         </Button>
 
@@ -143,7 +178,8 @@
         android:text="Click here to Order more"
         android:layout_margin="5dp"
         android:id="@+id/place_more"
-        android:background="@drawable/card"></Button>
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"></Button>
     <Button
         android:layout_weight="1"
         android:layout_width="match_parent"
@@ -151,5 +187,6 @@
         android:text="It was delicious ,Pay your bill"
         android:layout_margin="5dp"
         android:id="@+id/pay_bill"
-        android:background="@drawable/card"></Button>
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"></Button>
 </LinearLayout>

@@ -29,7 +29,7 @@ public class WaitingActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         ImageButton img=(ImageButton)findViewById(R.id.pic);
-        Glide.with(this).load(R.drawable.cooking).into(img);
+        Glide.with(this).load(R.drawable.preparing).into(img);
         Notification n=new Notification();
         n.setTable_no("1");
         n.setUser_id("123");

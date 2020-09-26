@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
         searchView=(androidx.appcompat.widget.SearchView )findViewById(R.id.search) ;
 
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.logo_24);
 
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recommended);
         recyclerView.setHasFixedSize(true);
