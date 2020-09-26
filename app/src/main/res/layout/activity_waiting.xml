@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/searchbview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical"
+    android:padding="0dp"
+    >
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:padding="15dp">
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_weight="1"
+                android:gravity="left"
+                android:layout_gravity="left"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/cart_item_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Resturant Name"
+                    android:textSize="30sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/cart_item_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_baseline_shopping_cart_black"
+                    android:gravity="left"
+                    android:padding="15px"
+                    android:text="Please wait.."
+                    android:textSize="18sp">
+
+                </TextView>
+
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/cart_remove"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:height="15dp"
+                    android:background="@drawable/menu"
+                    android:drawableLeft="@drawable/ic_baseline_remove_circle_outline_24"
+                    android:text="Remove"
+                    android:textColor="#ffffff">
+
+                </ImageButton>
+
+
+
+
+
+            </LinearLayout>
+
+
+
+
+        </LinearLayout>
+
+
+
+
+    </androidx.cardview.widget.CardView>
+
+    <ImageButton
+        android:id="@+id/pic"
+        android:layout_width="match_parent"
+        android:layout_height="600px"
+        android:background="@drawable/card"
+        android:src="@color/colorPrimary">
+
+    </ImageButton>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="3"
+
+        android:layout_margin="10dp">
+        <Button
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Ask Cutlerry"
+            android:id="@+id/ask_cutlerry"
+            android:layout_margin="5dp"
+            android:background="@drawable/card">
+
+        </Button>
+        <Button
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Call waiter"
+            android:id="@+id/call_waiter"
+            android:background="@drawable/card">
+
+        </Button>
+        <Button
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Report Problem"
+            android:id="@+id/report_problem"
+            android:background="@drawable/card">
+
+        </Button>
+
+    </LinearLayout>
+    <Button
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Click here to Order more"
+        android:layout_margin="5dp"
+        android:id="@+id/place_more"
+        android:background="@drawable/card"></Button>
+    <Button
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="It was delicious ,Pay your bill"
+        android:layout_margin="5dp"
+        android:id="@+id/pay_bill"
+        android:background="@drawable/card"></Button>
+</LinearLayout>
