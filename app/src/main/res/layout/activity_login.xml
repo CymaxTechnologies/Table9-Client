@@ -66,14 +66,15 @@
             android:hint="1234@sample.com"></EditText>
 
         <EditText
-            android:drawablePadding="5dp"
-            android:drawableLeft="@drawable/ic_baseline_lock_24"
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_margin="10dp"
             android:background="@drawable/edittext"
-            android:hint="*******"></EditText>
+            android:drawableLeft="@drawable/ic_baseline_lock_24"
+            android:drawablePadding="5dp"
+            android:hint="*******"
+            android:inputType="textPassword"></EditText>
 
 
         <ImageButton

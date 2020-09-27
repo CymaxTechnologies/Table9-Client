@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <LinearLayout
-                android:layout_weight="1"
+
                 android:gravity="left"
                 android:layout_gravity="left"
                 android:layout_width="match_parent"
@@ -27,7 +27,7 @@
                     android:id="@+id/cart_item_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Resturant Name"
+                    android:text="Zafran Chinese Den"
                     android:textSize="30sp"
                     android:textStyle="bold">
 
@@ -48,31 +48,7 @@
 
 
             </LinearLayout>
-            <LinearLayout
-                android:layout_gravity="right"
-                android:layout_weight="1"
-                android:gravity="right"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
 
-                <ImageButton
-                    android:id="@+id/cart_remove"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:height="15dp"
-                    android:background="@drawable/menu"
-                    android:drawableLeft="@drawable/ic_baseline_remove_circle_outline_24"
-                    android:text="Remove"
-                    android:textColor="#ffffff">
-
-                </ImageButton>
-
-
-
-
-
-            </LinearLayout>
 
 
 

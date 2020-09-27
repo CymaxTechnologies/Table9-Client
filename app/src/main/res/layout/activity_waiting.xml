@@ -17,11 +17,11 @@
 
         android:padding="15dp">
         <LinearLayout
-            android:weightSum="2"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <LinearLayout
-                android:layout_weight="1"
+
                 android:gravity="left"
                 android:layout_gravity="left"
                 android:layout_width="match_parent"
@@ -30,10 +30,11 @@
 
                 <TextView
                     android:id="@+id/cart_item_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="372dp"
                     android:layout_height="wrap_content"
-                    android:text="Resturant Name"
+                    android:text="Zafran Chinese Den"
                     android:textSize="30sp"
+
                     android:textStyle="bold">
 
                 </TextView>
@@ -59,25 +60,7 @@
                 android:gravity="right"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/cart_remove"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:height="15dp"
-                    android:background="@drawable/menu"
-                    android:drawableLeft="@drawable/ic_baseline_remove_circle_outline_24"
-                    android:text="Remove"
-                    android:textColor="#ffffff">
-
-                </ImageButton>
-
-
-
-
-
-            </LinearLayout>
+                android:orientation="vertical"/>
 
 
 
@@ -98,8 +81,8 @@
          android:id="@+id/pic"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:background="@drawable/card"
-         android:src="@color/colorPrimary">
+         android:background="@color/colorPrimary"
+         android:src="@drawable/logo_white_large">
 
      </ImageButton>
      <TextView
@@ -116,10 +99,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <androidx.cardview.widget.CardView
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
@@ -136,57 +121,115 @@
         android:weightSum="3"
 
         android:layout_margin="10dp">
-        <Button
-            android:layout_weight="1"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Ask Cutlerry"
-            android:id="@+id/ask_cutlerry"
-            android:layout_margin="5dp"
-            android:textColor="@android:color/white"
-            android:background="@color/colorPrimary">
+            android:layout_weight="1"
+            android:id="@+id/ask_cutlery"
+            android:padding="10dp">
+            <LinearLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <ImageButton
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:id="@+id/cutimage"
+                    android:src="@drawable/cuttlery">
 
-        </Button>
-        <Button
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Call waiter"
-            android:id="@+id/call_waiter"
-            android:textColor="@android:color/white"
-            android:background="@color/colorPrimary">
+                </ImageButton>
+                <TextView
+                    android:layout_margin="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ask Cutlery">
 
-        </Button>
-        <Button
-            android:layout_margin="5dp"
-            android:layout_weight="1"
+                </TextView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Report Problem"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:id="@+id/call_waiter">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageButton
+                    android:id="@+id/waiterimg"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/cuttlery">
+
+                </ImageButton>
+                <TextView
+                    android:layout_margin="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Call Waiter">
+
+                </TextView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:id="@+id/report_problem"
-            android:textColor="@android:color/white"
-            android:background="@color/colorPrimary">
+            android:padding="10dp">
+            <LinearLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <ImageButton
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:id="@+id/reportimg"
+                    android:src="@drawable/cuttlery">
 
-        </Button>
+                </ImageButton>
+                <TextView
+                    android:layout_margin="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Report ">
+
+                </TextView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
-    <Button
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Click here to Order more"
-        android:layout_margin="5dp"
-        android:id="@+id/place_more"
-        android:textColor="@android:color/white"
-        android:background="@color/colorPrimary"></Button>
-    <Button
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="It was delicious ,Pay your bill"
-        android:layout_margin="5dp"
-        android:id="@+id/pay_bill"
-        android:textColor="@android:color/white"
-        android:background="@color/colorPrimary"></Button>
+ <LinearLayout
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:orientation="vertical">
+     <Button
+         android:layout_weight="1"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:text="Click here to Order more"
+         android:drawableLeft="@drawable/logo_white_large"
+         android:drawablePadding="5dp"
+         android:layout_margin="5dp"
+         android:id="@+id/place_more"
+
+         android:textColor="@android:color/white"
+         android:background="@color/colorPrimary"></Button>
+     <Button
+         android:drawableLeft="@drawable/next_32"
+         android:drawablePadding="5dp"
+         android:layout_weight="1"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:text="It was delicious ,Pay your bill"
+         android:layout_margin="5dp"
+         android:id="@+id/pay_bill"
+         android:textColor="@android:color/white"
+         android:background="@color/colorPrimary"></Button>
+ </LinearLayout>
 </LinearLayout>

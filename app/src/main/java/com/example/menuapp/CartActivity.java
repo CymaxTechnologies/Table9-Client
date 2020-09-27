@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,6 +23,7 @@ import com.example.menuapp.SendNotificationPack.Data;
 import com.example.menuapp.SendNotificationPack.MyResponse;
 import com.example.menuapp.SendNotificationPack.NotificationSender;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -52,7 +55,7 @@ public class CartActivity extends AppCompatActivity {
         cart=(ArrayList<Cuisine>)getIntent().getSerializableExtra("cartI");
         count=(ArrayList<Integer>)getIntent().getSerializableExtra("cartC");
         updateButton();
-        getSupportActionBar().hide();
+       // getSupportActionBar().hide();
         cartSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,5 +190,21 @@ public class CartActivity extends AppCompatActivity {
                           Toast.makeText(getApplicationContext(),t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.mainmenu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId()==R.id.logout)
+        {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(getApplicationContext(),Login.class));
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
