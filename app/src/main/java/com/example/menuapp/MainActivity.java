@@ -2,11 +2,13 @@ package com.example.menuapp;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
@@ -43,15 +46,49 @@ public class MainActivity extends AppCompatActivity  {
     ArrayList<Cuisine> cartCuisine=new ArrayList<>();
     ArrayList<Integer> cartCount=new ArrayList<>();
     Button btncart;
+    String table="";
+    String resturant_id="";
+    String resturant_name;
     androidx.appcompat.widget.SearchView searchView;
     int count=0;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        resturant_id=(String)getIntent().getStringExtra("resturant_id");
+        table=(String)getIntent().getStringExtra("table");
+        resturant_name=(String)getIntent().getStringExtra("name") ;
         searchView=(androidx.appcompat.widget.SearchView )findViewById(R.id.search) ;
+       if(table.equals(""))
+       {
+           AlertDialog.Builder alert = new AlertDialog.Builder(this);
+           alert.setCancelable(false);
+           alert.setTitle("T9 App");
+           alert.setMessage("Please Enter Table no");
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+// Set an EditText view to get user input
+           final EditText input = new EditText(this);
+
+           alert.setView(input);
+
+           alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int whichButton) {
+
+                   table=input.getText().toString().trim();
+               }
+           });
+
+           alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int whichButton) {
+                   // Canceled.
+                   onCreate(savedInstanceState);
+               }
+           });
+
+           alert.show();
+
+       }
+          getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.logo_24);
 
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recommended);
@@ -59,7 +96,7 @@ public class MainActivity extends AppCompatActivity  {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 
-        DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("123456789").child("Cuisine");
+        DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child(resturant_id).child("Cuisine");
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -81,6 +118,9 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 Intent i=new Intent(getApplicationContext(),CartActivity.class);
+                i.putExtra("table",table);
+                i.putExtra("resturant_id",resturant_id);
+                i.putExtra("name",resturant_name);
                 i.putExtra("cartI",cartCuisine);
                 i.putExtra("cartC",cartCount);
                 startActivity(i);

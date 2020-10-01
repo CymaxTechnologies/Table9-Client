@@ -1,10 +1,18 @@
 package com.example.menuapp;
 
 public class Notification {
-    String id,message,table_no,user_id;
+    String id,message,table_no,user_id,resturant_id;
 
     public String getId() {
         return id;
+    }
+
+    public String getResturant_id() {
+        return resturant_id;
+    }
+
+    public void setResturant_id(String resturant_id) {
+        this.resturant_id = resturant_id;
     }
 
     public void setId(String id) {
@@ -40,6 +48,7 @@ public class Notification {
         id="";
         message="";
         table_no="";
+        resturant_id="";
         user_id="";
     }
 }

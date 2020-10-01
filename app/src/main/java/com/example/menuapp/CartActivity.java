@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
@@ -45,10 +46,21 @@ public class CartActivity extends AppCompatActivity {
     int total=0;
     Button cartSend;
     private APIService apiService;
+    ProgressDialog progressDialog;
+    String table="";
+    String resturant_id="";
+    String resturant_name="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
+        table=(String)getIntent().getStringExtra("table");
+        resturant_id=(String)getIntent().getStringExtra("resturant_id");
+        resturant_name=(String)getIntent().getStringExtra("name") ;
+        progressDialog=new ProgressDialog(CartActivity.this);
+        progressDialog.setTitle("T9 App");
+        progressDialog.setMessage("Please wait...");
+       // progressDialog.show();
          cartSend=findViewById(R.id.cartSend);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
@@ -56,12 +68,15 @@ public class CartActivity extends AppCompatActivity {
         count=(ArrayList<Integer>)getIntent().getSerializableExtra("cartC");
         updateButton();
        // getSupportActionBar().hide();
+        Toast.makeText(getApplicationContext(),table,Toast.LENGTH_SHORT).show();
+        TextView t=(TextView)findViewById(R.id.resturant_title);
+        t.setText(resturant_name);
         cartSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Order order = new Order();
-                order.setResturant_id("123456789");
-                order.setTable("1");
+                order.setResturant_id(resturant_id);
+                order.setTable(table);
                 HashMap<Cuisine, Integer> cu = new HashMap<>();
                 for (int i = 0; i < cart.size(); i++) {
                     cu.put(cart.get(i), count.get(i));
@@ -70,14 +85,19 @@ public class CartActivity extends AppCompatActivity {
                 order.setCuisines(cart);
                 order.setValue(Integer.toString(total));
                 order.setCount(count);
-                 DatabaseReference key=FirebaseDatabase.getInstance().getReference().child("123456789").child("orders").child(order.getTable()).child("pending").push();
+                 DatabaseReference key=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("pending").push();
                  order.setOrder_id(key.getKey());
 
                  key.setValue(order).addOnSuccessListener(new OnSuccessListener<Void>() {
                      @Override
                      public void onSuccess(Void aVoid) {
                          Toast.makeText(getApplicationContext(),"Order placed Succesfully",Toast.LENGTH_LONG).show();
-                         startActivity(new Intent(getApplicationContext(),WaitingActivity.class));
+                        // progressDialog.show();
+                         Intent i=new Intent(getApplicationContext(),WaitingActivity.class);
+                         i.putExtra("table",table);
+                         i.putExtra("name",resturant_name);
+                         i.putExtra("resturant_id",resturant_id);
+                         startActivity(i);
 
                          sendNotifications();
                          finish();

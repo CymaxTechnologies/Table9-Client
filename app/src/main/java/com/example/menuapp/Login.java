@@ -36,7 +36,7 @@ public class Login extends AppCompatActivity {
 
         if(FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
-            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+            startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
             finish();
         }
         bar=new ProgressDialog(Login.this);
@@ -66,7 +66,7 @@ public class Login extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful())
                             {
-                                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                                startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
                                 finish();
                             }
                             else

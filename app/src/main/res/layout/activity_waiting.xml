@@ -29,7 +29,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/cart_item_name"
+                    android:id="@+id/resturant_title"
                     android:layout_width="372dp"
                     android:layout_height="wrap_content"
                     android:text="Zafran Chinese Den"

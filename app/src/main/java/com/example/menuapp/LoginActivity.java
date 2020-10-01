@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             //display some message here
                             Toast.makeText(LoginActivity.this,"Successfully registered",Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, ResturantActivity.class);
                             FirebaseDatabase.getInstance().getReference().child("users").child(FirebaseAuth.getInstance().getUid()).child("mobile").setValue(phone.getText());
                             startActivity(intent);
                             finish();
