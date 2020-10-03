@@ -17,6 +17,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.json.JSONException;
+
 public class WaitingActivity extends AppCompatActivity {
     CardView ask,repord,cuttlery;
     Button pay,order;
@@ -25,10 +27,12 @@ public class WaitingActivity extends AppCompatActivity {
     String resturant_id;
     String resturant_name;
     DatabaseReference ref;
+    NotiHelper notiHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_waiting);
+        notiHelper=new NotiHelper(getApplicationContext());
         table=(String)getIntent().getStringExtra("table");
         resturant_id=(String)getIntent().getStringExtra("resturant_id");
         resturant_name=(String)getIntent().getStringExtra("name");
@@ -68,6 +72,11 @@ public class WaitingActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),"Request sent",Toast.LENGTH_LONG).show();
                     }
                 });
+                try {
+                    notiHelper.SendNotification(resturant_id,"Notification","Payment Settle request from table no "+table);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 dr=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("notification").child(n.getId());
                 dr.setValue(n);
                startActivity(new Intent(getApplicationContext(),ArrivingBillActivity.class));
@@ -84,6 +93,11 @@ public class WaitingActivity extends AppCompatActivity {
                 n.setMessage("Calling for waiter");
                 DatabaseReference dr=ref.push();
                 n.setId(dr.getKey());
+                try {
+                    notiHelper.SendNotification(resturant_id,"Notification","Waiter call from table no "+table);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 dr.setValue(n).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -105,6 +119,11 @@ public class WaitingActivity extends AppCompatActivity {
                 n.setMessage("Asking for Cutlery");
                 DatabaseReference dr=ref.push();
                 n.setId(dr.getKey());
+                try {
+                    notiHelper.SendNotification(resturant_id,"Notification","Cutlery request from table no "+table);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 dr.setValue(n).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -126,6 +145,11 @@ public class WaitingActivity extends AppCompatActivity {
                 n.setMessage("Reported a problem");
                 DatabaseReference dr=ref.push();
                 n.setId(dr.getKey());
+                try {
+                    notiHelper.SendNotification(resturant_id,"Notification","Reporting Issue request from table no "+table);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 dr.setValue(n).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

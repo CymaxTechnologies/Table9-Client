@@ -36,6 +36,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+
 import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -123,6 +125,11 @@ public class MainActivity extends AppCompatActivity  {
                 i.putExtra("name",resturant_name);
                 i.putExtra("cartI",cartCuisine);
                 i.putExtra("cartC",cartCount);
+                try {
+                    new NotiHelper(getApplicationContext()).SendNotification(resturant_id,"A new Order","A new Order from table no "+table);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 startActivity(i);
                 finish();
 
