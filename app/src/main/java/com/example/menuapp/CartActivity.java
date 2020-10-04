@@ -81,7 +81,7 @@ public class CartActivity extends AppCompatActivity {
                 for (int i = 0; i < cart.size(); i++) {
                     cu.put(cart.get(i), count.get(i));
                 }
-
+                order.setUser_id(FirebaseAuth.getInstance().getUid());
                 order.setCuisines(cart);
                 order.setValue(Integer.toString(total));
                 order.setCount(count);

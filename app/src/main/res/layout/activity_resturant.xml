@@ -5,7 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ResturantActivity"
+    android:orientation="vertical"
     android:background="@drawable/background">
+    <androidx.appcompat.widget.SearchView
+        android:layout_width="match_parent"
+        android:background="@drawable/card"
+        android:id="@+id/restsearch"
+        android:layout_marginBottom="5dp"
+        android:layout_height="wrap_content">
+
+
+    </androidx.appcompat.widget.SearchView>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

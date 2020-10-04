@@ -61,6 +61,7 @@ public class WaitingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Notification n=new Notification();
                 n.setTable_no(table);
+                n.setUser_id(FirebaseAuth.getInstance().getUid());
                 n.setUser_id("123");
                 n.setResturant_id(resturant_id);
                 n.setMessage("Want to settle bill");
@@ -87,6 +88,7 @@ public class WaitingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Notification n=new Notification();
+                n.setUser_id(FirebaseAuth.getInstance().getUid());
                 n.setTable_no(table);
                 n.setUser_id("123");
                 n.setResturant_id(resturant_id);
@@ -115,6 +117,7 @@ public class WaitingActivity extends AppCompatActivity {
                 Notification n=new Notification();
                 n.setTable_no(table);
                 n.setUser_id("123");
+                n.setUser_id(FirebaseAuth.getInstance().getUid());
                 n.setResturant_id(resturant_id);
                 n.setMessage("Asking for Cutlery");
                 DatabaseReference dr=ref.push();
@@ -124,6 +127,7 @@ public class WaitingActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
                 dr.setValue(n).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -141,6 +145,7 @@ public class WaitingActivity extends AppCompatActivity {
                 Notification n=new Notification();
                 n.setTable_no(table);
                 n.setUser_id("123");
+                n.setUser_id(FirebaseAuth.getInstance().getUid());
                 n.setResturant_id(resturant_id);
                 n.setMessage("Reported a problem");
                 DatabaseReference dr=ref.push();
@@ -166,6 +171,7 @@ public class WaitingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i=new Intent(getApplicationContext(),MainActivity.class);
                 i.putExtra("table",table);
+
                 i.putExtra("name",resturant_name);
                 i.putExtra("resturant_id",resturant_id);
                 startActivity(i);

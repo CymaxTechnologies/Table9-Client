@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ArrivingBillActivity"
+    android:gravity="center"
+    android:background="@drawable/background">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        >
+        <ImageButton
+            android:background="@android:color/transparent"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:id="@+id/wait"
+            android:src="@drawable/ic_baseline_storefront_24">
+
+        </ImageButton>
+
+
+
+        <Button
+            android:id="@+id/btnlogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/edittext"
+            android:gravity="center"
+            android:text="Please wait you will be assigned a table"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold"></Button>
+    </LinearLayout>
+</LinearLayout>
