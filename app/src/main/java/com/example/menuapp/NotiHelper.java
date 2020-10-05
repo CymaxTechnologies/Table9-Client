@@ -36,7 +36,7 @@ public class NotiHelper  {
 
             @Override
             public void onResponse(JSONObject response) {
-                Toast.makeText(c,response.toString(),Toast.LENGTH_SHORT).show();
+               // Toast.makeText(c,response.toString(),Toast.LENGTH_SHORT).show();
             }
         }
                 , new Response.ErrorListener() {

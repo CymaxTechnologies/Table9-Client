@@ -57,39 +57,11 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        resturant_id=(String)getIntent().getStringExtra("resturant_id");
-        table=(String)getIntent().getStringExtra("table");
-        resturant_name=(String)getIntent().getStringExtra("name") ;
+        resturant_id= getSharedPreferences("global",MODE_PRIVATE).getString("resturant_id", "123");
+        resturant_name=(getSharedPreferences("global",MODE_PRIVATE).getString("name", "123"));
+        table=getSharedPreferences("global",MODE_PRIVATE).getString("table", "123");
         searchView=(androidx.appcompat.widget.SearchView )findViewById(R.id.search) ;
-       if(table.equals(""))
-       {
-           AlertDialog.Builder alert = new AlertDialog.Builder(this);
-           alert.setCancelable(false);
-           alert.setTitle("T9 App");
-           alert.setMessage("Please Enter Table no");
 
-// Set an EditText view to get user input
-           final EditText input = new EditText(this);
-
-           alert.setView(input);
-
-           alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-               public void onClick(DialogInterface dialog, int whichButton) {
-
-                   table=input.getText().toString().trim();
-               }
-           });
-
-           alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-               public void onClick(DialogInterface dialog, int whichButton) {
-                   // Canceled.
-                   onCreate(savedInstanceState);
-               }
-           });
-
-           alert.show();
-
-       }
           getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.logo_24);
 

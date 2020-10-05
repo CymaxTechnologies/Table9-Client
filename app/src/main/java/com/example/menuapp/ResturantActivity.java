@@ -55,10 +55,18 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_resturant);
         getSupportActionBar().setTitle("Select Resturant");
         FirebaseMessaging.getInstance().subscribeToTopic("all");
+        String resturant_id=getSharedPreferences("global",MODE_PRIVATE).getString("resturant_id","123");
+        if(!resturant_id.equals("123"))
+        {
+            startActivity(new Intent(getApplicationContext(),MainActivity.class));
 
+            finish();
+            return;
+        }
         searchView=(SearchView)findViewById(R.id.restsearch) ;
         searchView.setOnQueryTextListener(this);
         progressDialog=new ProgressDialog(ResturantActivity.this);
@@ -151,6 +159,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                         i.putExtra("table","");
                         i.putExtra("name",resturant.name);
                         startActivity(i);
+                        finish();
                     }
                 });
                 holder.locate.setOnClickListener(new View.OnClickListener() {

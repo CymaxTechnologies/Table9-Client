@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -40,23 +41,33 @@ public class Tablewaiting extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
         FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               if(dataSnapshot.hasChildren())
+               if(dataSnapshot.exists())
                {
-                   if(dataSnapshot.getValue(String.class).equals("not_available"))
+                   String s=dataSnapshot.getValue(String.class);
+                   Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+                   if(s.equals("not_available"))
                    {
                        Toast.makeText(getApplicationContext(),"No Any table assigned",Toast.LENGTH_LONG).show();
-                       startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                   }else
+                       ;
+                       startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                       finish();
+                   }
+                   else if(s.equals("waiting"))
+                   {
+
+                   }
+                   else if(Integer.parseInt(s)<100)
                    {
                        String table=dataSnapshot.getValue(String.class);
-                       Toast.makeText(getApplicationContext(),"You table no is "+table,Toast.LENGTH_LONG).show();
-                       Intent i=new Intent(getApplicationContext(),MainActivity.class);
-                       i.putExtra("resturant_id",resturant_id);
-                       i.putExtra("name",name);
-                       i.putExtra("table",table);
+                     //Toast.makeText(getApplicationContext(),"HI",Toast.LENGTH_LONG).show();
+                    //   startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                       startA(table);
+                       return;
+                   //    finish();
                    }
                }
             }
@@ -66,5 +77,20 @@ public class Tablewaiting extends AppCompatActivity {
 
             }
         });
+    }
+    void  startA(String table)
+    {
+        SharedPreferences.Editor editor=getSharedPreferences("global",MODE_PRIVATE).edit();
+        editor.putString("resturant_id",resturant_id);
+        editor.putString("name",name);
+        editor.putString("table",table);
+        editor.commit();
+      //  Intent i=new Intent(getApplicationContext(),MainActivity.class);
+     //   i.putExtra("resturant_id",resturant_id);
+      //  i.putExtra("name",name);
+      //  i.putExtra("table",table);
+        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+        Toast.makeText(getApplicationContext(),"You have assigned a table "+table,Toast.LENGTH_LONG).show();
+        finish();
     }
 }

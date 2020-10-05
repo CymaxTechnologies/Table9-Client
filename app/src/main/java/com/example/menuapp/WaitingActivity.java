@@ -80,6 +80,7 @@ public class WaitingActivity extends AppCompatActivity {
                 }
                 dr=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("notification").child(n.getId());
                 dr.setValue(n);
+                getSharedPreferences("global",MODE_PRIVATE).edit().clear().commit();
                startActivity(new Intent(getApplicationContext(),ArrivingBillActivity.class));
 
             }
