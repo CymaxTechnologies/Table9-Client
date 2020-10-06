@@ -7,6 +7,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,11 +32,13 @@ public class LoginActivity extends AppCompatActivity {
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback;
     String verificationCode;
     ProgressDialog bar;
+    //CustomDialog customDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         getSupportActionBar().hide();
+     //   customDialog=new CustomDialog(this);
         bar=new ProgressDialog(LoginActivity.this);
          bar.setMessage("Please wait while we verify your number");
          bar.setTitle("T9App");
@@ -43,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         email=(EditText) findViewById(R.id.email);
         password=(EditText)findViewById(R.id.password);
         phone=(EditText)findViewById(R.id.phone);
-        ImageButton btn=(ImageButton) findViewById(R.id.login_button);
+        Button btn=(Button) findViewById(R.id.login_button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,14 +61,15 @@ public class LoginActivity extends AppCompatActivity {
                 {
                     p=phone.getText().toString();
 
-                    PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                            "+91"+p,                     // Phone number to verify
-                            60,                           // Timeout duration
-                            TimeUnit.SECONDS,                // Unit of timeout
-                            LoginActivity.this,        // Activity (for callback binding)
-                            mCallback);
+                       Intent i=new Intent(LoginActivity.this,OtpVerificationActivity.class);
+                       i.putExtra("phone",p);
+                       i.putExtra("email",email.getText().toString());
+                       i.putExtra("password",password.getText().toString());
+                       startActivity(i);
+                       finish();
                 }
-                bar.show();
+              //  customDialog.show();
+              //  bar.show();
 
             }
         });
@@ -89,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                             //display some message here
                             Toast.makeText(LoginActivity.this,"Registration Error",Toast.LENGTH_LONG).show();
                         }
-                        bar.dismiss();
+
 
                     }
                 });
@@ -97,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onVerificationFailed(FirebaseException e) {
-                Toast.makeText(LoginActivity.this,"verification fialed",Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
                 bar.dismiss();
             }
 

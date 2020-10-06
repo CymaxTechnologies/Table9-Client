@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -154,7 +155,12 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                 holder.check_in.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent i=new Intent(getApplicationContext(),Tablewaiting.class);
+                        Intent i=new Intent(getApplicationContext(),MainActivity.class);
+                        SharedPreferences.Editor editor=getSharedPreferences("global",MODE_PRIVATE).edit();
+                        editor.putString("resturant_id",resturant.data_id);
+                        editor.putString("name",resturant.name);
+                        editor.putString("table","waiting");
+                        editor.commit();
                         i.putExtra("resturant_id",resturant.data_id);
                         i.putExtra("table","");
                         i.putExtra("name",resturant.name);

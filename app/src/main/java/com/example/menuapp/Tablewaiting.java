@@ -67,7 +67,7 @@ public class Tablewaiting extends AppCompatActivity {
                     //   startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
                        startA(table);
                        return;
-                   //    finish();
+
                    }
                }
             }
@@ -80,11 +80,7 @@ public class Tablewaiting extends AppCompatActivity {
     }
     void  startA(String table)
     {
-        SharedPreferences.Editor editor=getSharedPreferences("global",MODE_PRIVATE).edit();
-        editor.putString("resturant_id",resturant_id);
-        editor.putString("name",name);
-        editor.putString("table",table);
-        editor.commit();
+
       //  Intent i=new Intent(getApplicationContext(),MainActivity.class);
      //   i.putExtra("resturant_id",resturant_id);
       //  i.putExtra("name",name);

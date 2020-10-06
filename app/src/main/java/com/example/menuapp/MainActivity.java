@@ -59,12 +59,61 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
         resturant_id= getSharedPreferences("global",MODE_PRIVATE).getString("resturant_id", "123");
         resturant_name=(getSharedPreferences("global",MODE_PRIVATE).getString("name", "123"));
-        table=getSharedPreferences("global",MODE_PRIVATE).getString("table", "123");
+        table=getSharedPreferences("global",MODE_PRIVATE).getString("table", "waiting");
         searchView=(androidx.appcompat.widget.SearchView )findViewById(R.id.search) ;
 
           getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.logo_24);
+        Notification notification=new Notification();
+        notification.setUser_id(FirebaseAuth.getInstance().getUid());
+        notification.setResturant_id(resturant_id);
+        notification.setMessage("New Client");
+        DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").push();
+        notification.setId(drf.getKey());
+        drf.setValue(notification);
+        try {
+            new NotiHelper(MainActivity.this).SendNotification(resturant_id,"New Arrival","Customer is waiting for table \n"+"Customer : "+FirebaseAuth.getInstance().getUid());
+            Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
+        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists())
+                {
+                    String s=dataSnapshot.getValue(String.class);
+                    Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+                    table=s;
+                    if(s.equals("not_available"))
+                    {
+                        Toast.makeText(getApplicationContext(),"No Any table assigned",Toast.LENGTH_LONG).show();
+                        ;
 
+                    }
+                    else if(s.equals("waiting"))
+                    {
+
+                    }
+                    else if(Integer.parseInt(s)<1000)
+                    {
+                        String table=dataSnapshot.getValue(String.class);
+
+                        Toast.makeText(getApplicationContext(),"You have assigned a table no "+table,Toast.LENGTH_LONG).show();
+                        //   startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+
+                        return;
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recommended);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -91,20 +140,23 @@ public class MainActivity extends AppCompatActivity  {
         btncart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(getApplicationContext(),CartActivity.class);
-                i.putExtra("table",table);
-                i.putExtra("resturant_id",resturant_id);
-                i.putExtra("name",resturant_name);
-                i.putExtra("cartI",cartCuisine);
-                i.putExtra("cartC",cartCount);
-                try {
-                    new NotiHelper(getApplicationContext()).SendNotification(resturant_id,"A new Order","A new Order from table no "+table);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                startActivity(i);
-                finish();
+               if(!(table.equals("waiting")||table.equals("not_available")))
+               {
+                   Intent i=new Intent(getApplicationContext(),CartActivity.class);
+                   i.putExtra("table",table);
+                   i.putExtra("resturant_id",resturant_id);
+                   i.putExtra("name",resturant_name);
+                   i.putExtra("cartI",cartCuisine);
+                   i.putExtra("cartC",cartCount);
+                   try {
+                       new NotiHelper(getApplicationContext()).SendNotification(resturant_id,"A new Order","A new Order from table no "+table);
+                   } catch (JSONException e) {
+                       e.printStackTrace();
+                   }
+                   startActivity(i);
+                   finish();
 
+               }
             }
         });
 

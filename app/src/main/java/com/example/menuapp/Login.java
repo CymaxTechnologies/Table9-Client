@@ -25,7 +25,7 @@ import org.w3c.dom.Text;
 public class Login extends AppCompatActivity {
     EditText email,password;
     TextView signup,forgot;
-    ImageButton btn;
+    Button btn;
 
     ProgressDialog bar;
     @Override
@@ -51,7 +51,7 @@ public class Login extends AppCompatActivity {
         });
         email=(EditText)findViewById(R.id.lemail);
         password=(EditText)findViewById(R.id.lpassword);
-        btn=(ImageButton)findViewById(R.id.btn_login);
+        btn=(Button) findViewById(R.id.btn_login);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -51,6 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_margin="10dp"
+            android:inputType="textEmailAddress"
             android:background="@drawable/edittext"
             android:hint="1234@sample.com"></EditText>
 
@@ -59,6 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_margin="10dp"
+
             android:background="@drawable/edittext"
             android:drawableLeft="@drawable/ic_baseline_lock_24"
 
@@ -74,16 +76,18 @@
             android:layout_height="wrap_content"
             android:text="Forgot password"></TextView>
 
-        <ImageButton
+        <Button
             android:id="@+id/btn_login"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:src="@drawable/next_32"
+            android:textColor="@color/colorPrimary"
+            android:text="Sign Up"
+
             android:padding="10dp"
             android:layout_margin="20dp"
-            android:background="@color/colorPrimary">
+            android:background="@drawable/edittext">
 
-            android:textColor="#0FFFFFFF"></ImageButton>
+            android:textColor="#0FFFFFFF"></Button>
 
         <TextView
             android:id="@+id/signup"
