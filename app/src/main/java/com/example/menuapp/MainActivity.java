@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity  {
         btncart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               if(!(table.equals("waiting")||table.equals("not_available")))
+               if(true)
                {
                    Intent i=new Intent(getApplicationContext(),CartActivity.class);
                    i.putExtra("table",table);
@@ -324,6 +324,11 @@ public class MainActivity extends AppCompatActivity  {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(getApplicationContext(),Login.class));
             finish();
+        }
+        if(item.getItemId()==R.id.profile)
+        {
+            startActivity(new Intent(getApplicationContext(),UserProfileActivity.class));
+
         }
         return super.onOptionsItemSelected(item);
     }

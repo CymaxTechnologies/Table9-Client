@@ -94,6 +94,7 @@ public class WaitingActivity extends AppCompatActivity {
                 dr.setValue(n);
                 getSharedPreferences("global",MODE_PRIVATE).edit().clear().commit();
                startActivity(new Intent(getApplicationContext(),ArrivingBillActivity.class));
+               finish();
 
             }
         });

@@ -3,15 +3,28 @@ package com.example.menuapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -40,6 +53,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,49 +61,112 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ResturantActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
-    ArrayList<Resturant> data=new ArrayList<>();
+    ArrayList<Resturant> data = new ArrayList<>();
     ProgressDialog progressDialog;
     RecyclerView recyclerView;
     ResturantAdapter adapter;
     SearchView searchView;
-    ArrayList<Resturant> alldata=new ArrayList<>();
+    ArrayList<Resturant> alldata = new ArrayList<>();
+    String city = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_resturant);
         getSupportActionBar().setTitle("Select Resturant");
+        if (ContextCompat.checkSelfPermission(ResturantActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ResturantActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ActivityCompat.requestPermissions(ResturantActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            } else {
+                ActivityCompat.requestPermissions(ResturantActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+        }
         FirebaseMessaging.getInstance().subscribeToTopic("all");
-        String resturant_id=getSharedPreferences("global",MODE_PRIVATE).getString("resturant_id","123");
-        if(!resturant_id.equals("123"))
-        {
-            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+        String resturant_id = getSharedPreferences("global", MODE_PRIVATE).getString("resturant_id", "123");
+        if (!resturant_id.equals("123")) {
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
             finish();
             return;
         }
-        searchView=(SearchView)findViewById(R.id.restsearch) ;
+        searchView = (SearchView) findViewById(R.id.restsearch);
         searchView.setOnQueryTextListener(this);
-        progressDialog=new ProgressDialog(ResturantActivity.this);
+        progressDialog = new ProgressDialog(ResturantActivity.this);
         progressDialog.setTitle("T9 App");
         progressDialog.setMessage("Please wait...");
-         progressDialog.show();
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         FirebaseDatabase.getInstance().getReference().child("resturants").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 data.clear();
-                for(DataSnapshot d:dataSnapshot.getChildren())
-                {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
                     data.add(d.getValue(Resturant.class));
-                    Toast.makeText(getApplicationContext(),   data.get(0).getName(),Toast.LENGTH_SHORT).show();
+                 //   Toast.makeText(getApplicationContext(), data.get(0).getName(), Toast.LENGTH_SHORT).show();
                 }
-                adapter=new ResturantAdapter();
-                alldata.addAll(data);
-                 recyclerView=(RecyclerView)findViewById(R.id.resturant_list);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(ResturantActivity.this));
-                recyclerView.setAdapter(adapter);
-                progressDialog.dismiss();
+                final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+                if (ActivityCompat.checkSelfPermission(ResturantActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ResturantActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+                        @Override
+                        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                        }
+
+                        @Override
+                        public void onLocationChanged(@NonNull Location location) {
+                            Geocoder geocoder=new Geocoder(ResturantActivity.this,Locale.getDefault());
+                            try {
+                                List<Address> addresses=geocoder.getFromLocation(location.getLatitude(),location.getLongitude(),1);
+                                city=addresses.get(0).getLocality();
+                                ArrayList<Resturant> temp=new ArrayList<>();
+                                for(Resturant r:data)
+                                {
+                                    if(r.city.toLowerCase().equals(city.toLowerCase())||city=="")
+                                    {
+                                        temp.add(r);
+
+                                    }
+                                }
+                                data=temp;
+                                adapter=new ResturantAdapter();
+                                alldata.addAll(data);
+                                recyclerView=(RecyclerView)findViewById(R.id.resturant_list);
+                                recyclerView.setHasFixedSize(true);
+                                recyclerView.setLayoutManager(new LinearLayoutManager(ResturantActivity.this));
+                                recyclerView.setAdapter(adapter);
+                                locationManager.removeUpdates(this);
+                                progressDialog.dismiss();
+                                Toast.makeText(getApplicationContext(),city,Toast.LENGTH_LONG).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                   // return;
+
+                }
+                else
+                {
+                    adapter=new ResturantAdapter();
+                    alldata.addAll(data);
+                    recyclerView=(RecyclerView)findViewById(R.id.resturant_list);
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(ResturantActivity.this));
+                    recyclerView.setAdapter(adapter);
+                    progressDialog.dismiss();
+                }
+
+
+
+
             }
 
             @Override
@@ -146,6 +223,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                 holder.address.setText(resturant.address);
                 holder.mobile.setText(resturant.contact);
                 holder.category.setText(resturant.category);
+
                 FirebaseMessaging.getInstance().subscribeToTopic(FirebaseAuth.getInstance().getUid());
           //  Glide.with(getApplicationContext())
            //         .load(holder.picture)
@@ -161,6 +239,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                         editor.putString("name",resturant.name);
                         editor.putString("table","waiting");
                         editor.commit();
+                        Toast.makeText(getApplicationContext(),city,Toast.LENGTH_LONG).show();
                         i.putExtra("resturant_id",resturant.data_id);
                         i.putExtra("table","");
                         i.putExtra("name",resturant.name);
@@ -218,5 +297,26 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
         public Filter getFilter() {
             return exampleFilter;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.mainmenu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId()==R.id.logout)
+        {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(getApplicationContext(), Login.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.profile)
+        {
+            startActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -95,6 +95,11 @@ public class OtpVerificationActivity extends AppCompatActivity {
                             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email,password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
+                                    UserProfile userProfile=new UserProfile();
+                                    userProfile.setPassword(password);
+                                    userProfile.setEmail(email);
+                                    userProfile.setPhone(phone);
+                                    FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).setValue(userProfile);
                                     Toast.makeText(OtpVerificationActivity.this,"Validation Succesfull",Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
                                 }

@@ -67,6 +67,43 @@ public class CartActivity extends AppCompatActivity {
         cart=(ArrayList<Cuisine>)getIntent().getSerializableExtra("cartI");
         count=(ArrayList<Integer>)getIntent().getSerializableExtra("cartC");
         updateButton();
+        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.exists())
+                {
+                    String s=dataSnapshot.getValue(String.class);
+                    Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+                    table=s;
+                    if(s.equals("not_available"))
+                    {
+                        Toast.makeText(getApplicationContext(),"No Any table assigned",Toast.LENGTH_LONG).show();
+                        ;
+
+                    }
+                    else if(s.equals("waiting"))
+                    {
+
+                    }
+                    else if(Integer.parseInt(s)<1000)
+                    {
+                        table=dataSnapshot.getValue(String.class);
+
+                        Toast.makeText(getApplicationContext(),"You have assigned a table no "+table,Toast.LENGTH_LONG).show();
+                        //   startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+
+                        //return;
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
        // getSupportActionBar().hide();
         Toast.makeText(getApplicationContext(),table,Toast.LENGTH_SHORT).show();
         TextView t=(TextView)findViewById(R.id.resturant_title);
@@ -74,6 +111,19 @@ public class CartActivity extends AppCompatActivity {
         cartSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(table.equals("waiting"))
+                {
+
+                    Toast.makeText(getApplicationContext(),"Please wait you are not assigned a table",Toast.LENGTH_LONG).show();
+
+                    return;
+                }
+                if(table.equals("not_available"))
+                {
+                    Toast.makeText(getApplicationContext(),"No table Available",Toast.LENGTH_LONG).show();
+
+                }
+
                 Order order = new Order();
                 order.setResturant_id(resturant_id);
                 order.setTable(table);
@@ -81,6 +131,7 @@ public class CartActivity extends AppCompatActivity {
                 for (int i = 0; i < cart.size(); i++) {
                     cu.put(cart.get(i), count.get(i));
                 }
+
                 order.setUser_id(FirebaseAuth.getInstance().getUid());
                 order.setCuisines(cart);
                 order.setValue(Integer.toString(total));
