@@ -64,21 +64,35 @@ public class MainActivity extends AppCompatActivity  {
 
           getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.logo_24);
-        Notification notification=new Notification();
+        final Notification notification=new Notification();
         notification.setUser_id(FirebaseAuth.getInstance().getUid());
         notification.setResturant_id(resturant_id);
         notification.setMessage("New Client");
-        DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").push();
-        notification.setId(drf.getKey());
-        drf.setValue(notification);
-        try {
-            new NotiHelper(MainActivity.this).SendNotification(resturant_id,"New Arrival","Customer is waiting for table \n"+"Customer : "+FirebaseAuth.getInstance().getUid());
-            Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
-        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
+       FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists())
+                {
+                    DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").push();
+                    notification.setId(drf.getKey());
+                    drf.setValue(notification);
+                    try {
+                        new NotiHelper(MainActivity.this).SendNotification(resturant_id,"New Arrival","Customer is waiting for table \n"+"Customer : "+FirebaseAuth.getInstance().getUid());
+                        Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+            FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists())

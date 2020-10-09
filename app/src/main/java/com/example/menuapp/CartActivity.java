@@ -121,7 +121,7 @@ public class CartActivity extends AppCompatActivity {
                 if(table.equals("not_available"))
                 {
                     Toast.makeText(getApplicationContext(),"No table Available",Toast.LENGTH_LONG).show();
-
+                   return;
                 }
 
                 Order order = new Order();
@@ -226,19 +226,7 @@ public class CartActivity extends AppCompatActivity {
     }
     public void sendNotifications() {
         final String[] usertoken = new String[1];
-        DatabaseReference r=FirebaseDatabase.getInstance().getReference().child("123456789").child("token");
-        r.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                usertoken[0] =dataSnapshot.getValue(String.class).toString();
-               // Toast.makeText(getApplicationContext(),usertoken[0],Toast.LENGTH_LONG).show();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
         Data data = new Data("New Order", "New Order from table 1");
         NotificationSender sender = new NotificationSender(data, usertoken[0]);
@@ -252,7 +240,7 @@ public class CartActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(),Integer.toString(response.code()),Toast.LENGTH_LONG).show();
+                  //  Toast.makeText(getApplicationContext(),Integer.toString(response.code()),Toast.LENGTH_LONG).show();
                 }
             }
 
