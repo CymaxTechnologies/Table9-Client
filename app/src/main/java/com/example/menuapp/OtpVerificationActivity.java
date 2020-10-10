@@ -99,9 +99,10 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                     userProfile.setPassword(password);
                                     userProfile.setEmail(email);
                                     userProfile.setPhone(phone);
-                                    FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).setValue(userProfile);
+                                    FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getUid()).setValue(userProfile);
                                     Toast.makeText(OtpVerificationActivity.this,"Validation Succesfull",Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                                    finish();
                                 }
                             });
                         }

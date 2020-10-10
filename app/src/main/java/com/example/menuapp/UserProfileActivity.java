@@ -90,10 +90,12 @@ public class UserProfileActivity extends AppCompatActivity  {
                 progressDialog.dismiss();
             }
         });
+
   emailc.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-          BottomSheetDialog dialog=new BottomSheetDialog( email,userProfile,'e');
+          Toast.makeText(getApplicationContext(),"You can not change your email",Toast.LENGTH_LONG).show();
+         /* BottomSheetDialog dialog=new BottomSheetDialog( email,userProfile,'e');
           dialog.show(getSupportFragmentManager(),"Dialog");
           String s=dialog.value;
 
@@ -101,7 +103,7 @@ public class UserProfileActivity extends AppCompatActivity  {
           {
               email.setText(s);
               userProfile.setEmail(s);
-          }
+          }*/
       }
   });
         phonec.setOnClickListener(new View.OnClickListener() {

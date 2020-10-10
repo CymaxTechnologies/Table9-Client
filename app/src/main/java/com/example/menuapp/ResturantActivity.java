@@ -20,7 +20,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -68,12 +70,31 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
     SearchView searchView;
     ArrayList<Resturant> alldata = new ArrayList<>();
     String city = "";
-
+    private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_resturant);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            askPermission();
+        }
+        else
+        {
+
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            startService(new Intent(ResturantActivity.this, FloatingViewService.class));
+            finish();
+        } else if (Settings.canDrawOverlays(this)) {
+            startService(new Intent(ResturantActivity.this, FloatingViewService.class));
+
+        } else {
+            askPermission();
+            Toast.makeText(this, "You need System Alert Window Permission to do this", Toast.LENGTH_SHORT).show();
+        }
         getSupportActionBar().setTitle("Select Resturant");
         if (ContextCompat.checkSelfPermission(ResturantActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -244,7 +265,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                         i.putExtra("table","");
                         i.putExtra("name",resturant.name);
                         startActivity(i);
-                        finish();
+                        //finish();
                     }
                 });
                 holder.locate.setOnClickListener(new View.OnClickListener() {
@@ -318,5 +339,16 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
             startActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
         }
         return super.onOptionsItemSelected(item);
+    }
+    private void askPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION);
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
     }
 }

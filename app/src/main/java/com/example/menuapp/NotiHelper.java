@@ -31,6 +31,7 @@ public class NotiHelper  {
         JSONObject not = new JSONObject();
         not.put("title", title);
         not.put("body", body);
+        not.put("sound","mymusic");
         main.put("notification", not);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "https://fcm.googleapis.com/fcm/send", main, new Response.Listener<JSONObject>() {
 

@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity  {
     String resturant_name;
     androidx.appcompat.widget.SearchView searchView;
     int count=0;
+    ArrayList<Cuisine> all=new ArrayList<>();
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,37 +63,15 @@ public class MainActivity extends AppCompatActivity  {
         table=getSharedPreferences("global",MODE_PRIVATE).getString("table", "waiting");
         searchView=(androidx.appcompat.widget.SearchView )findViewById(R.id.search) ;
 
-          getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.logo_24);
-        final Notification notification=new Notification();
-        notification.setUser_id(FirebaseAuth.getInstance().getUid());
-        notification.setResturant_id(resturant_id);
-        notification.setMessage("New Client");
-       FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        searchView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists())
-                {
-                    DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").push();
-                    notification.setId(drf.getKey());
-                    drf.setValue(notification);
-                    try {
-                        new NotiHelper(MainActivity.this).SendNotification(resturant_id,"New Arrival","Customer is waiting for table \n"+"Customer : "+FirebaseAuth.getInstance().getUid());
-                        Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+            public void onClick(View v) {
+                searchView.onActionViewExpanded();
             }
         });
-            FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
+          getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.logo_24);
+                  FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists())
@@ -128,7 +107,7 @@ public class MainActivity extends AppCompatActivity  {
 
             }
         });
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recommended);
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.main_menu);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -142,6 +121,7 @@ public class MainActivity extends AppCompatActivity  {
                     Cuisine co=d.getValue(Cuisine.class);
                     data.add(co);
                 }
+                all.addAll(data);
                 recyclerView.setAdapter(new RecommendedAdapter());
             }
 
@@ -168,7 +148,7 @@ public class MainActivity extends AppCompatActivity  {
                        e.printStackTrace();
                    }
                    startActivity(i);
-                   finish();
+                  // finish();
 
                }
             }
@@ -206,7 +186,7 @@ public class MainActivity extends AppCompatActivity  {
     public class RecommendedAdapter extends RecyclerView.Adapter<RecommendedAdapter.holder> implements Filterable{
 
         Context c;
-        ArrayList<Cuisine> all=new ArrayList<>();
+
 
         @NonNull
         @Override
@@ -291,7 +271,7 @@ public class MainActivity extends AppCompatActivity  {
                     filteredList.addAll(all);
                 } else {
                     String filterPattern = constraint.toString().toLowerCase().trim();
-                    for (Cuisine  item : data) {
+                    for (Cuisine  item : all) {
                         if (item.getCousine_name().toLowerCase().contains(filterPattern) ||item.getAbout().toLowerCase().contains(filterPattern)) {
                             filteredList.add(item);
                         }

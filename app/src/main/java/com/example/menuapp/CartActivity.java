@@ -33,6 +33,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -66,6 +68,35 @@ public class CartActivity extends AppCompatActivity {
 
         cart=(ArrayList<Cuisine>)getIntent().getSerializableExtra("cartI");
         count=(ArrayList<Integer>)getIntent().getSerializableExtra("cartC");
+        final Notification notification=new Notification();
+        notification.setUser_id(FirebaseAuth.getInstance().getUid());
+        notification.setResturant_id(resturant_id);
+        notification.setMessage("New Client");
+        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists())
+                {
+                    DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").push();
+                    notification.setId(drf.getKey());
+                    drf.setValue(notification);
+                    try {
+                        new NotiHelper(CartActivity.this).SendNotification(resturant_id,"New Arrival","Customer is waiting for table \n"+"Customer : "+FirebaseAuth.getInstance().getUid());
+                        Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         updateButton();
         FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -111,6 +142,35 @@ public class CartActivity extends AppCompatActivity {
         cartSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final Notification notification=new Notification();
+                notification.setUser_id(FirebaseAuth.getInstance().getUid());
+                notification.setResturant_id(resturant_id);
+                notification.setMessage("New Client");
+                FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(!dataSnapshot.exists())
+                        {
+                            DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").push();
+                            notification.setId(drf.getKey());
+                            drf.setValue(notification);
+                            try {
+                                new NotiHelper(CartActivity.this).SendNotification(resturant_id,"New Arrival","Customer is waiting for table \n"+"Customer : "+FirebaseAuth.getInstance().getUid());
+                                Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
                 if(table.equals("waiting"))
                 {
 
