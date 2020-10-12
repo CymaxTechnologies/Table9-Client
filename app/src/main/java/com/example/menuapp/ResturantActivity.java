@@ -110,10 +110,10 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
         FirebaseMessaging.getInstance().subscribeToTopic("all");
         String resturant_id = getSharedPreferences("global", MODE_PRIVATE).getString("resturant_id", "123");
         if (!resturant_id.equals("123")) {
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+           // startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
-            finish();
-            return;
+            //finish();
+          //  return;
         }
         searchView = (SearchView) findViewById(R.id.restsearch);
         searchView.setOnQueryTextListener(this);
@@ -129,7 +129,14 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                 for (DataSnapshot d : dataSnapshot.getChildren()) {
                     data.add(d.getValue(Resturant.class));
                  //   Toast.makeText(getApplicationContext(), data.get(0).getName(), Toast.LENGTH_SHORT).show();
-                }
+
+                    adapter=new ResturantAdapter();
+                    alldata.addAll(data);
+                    recyclerView=(RecyclerView)findViewById(R.id.resturant_list);
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(ResturantActivity.this));
+                    recyclerView.setAdapter(adapter);
+                    progressDialog.dismiss();                }
                 final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
                 if (ActivityCompat.checkSelfPermission(ResturantActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ResturantActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -157,7 +164,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                                     }
                                 }
                                 data=temp;
-                                adapter=new ResturantAdapter();
+                            /*    adapter=new ResturantAdapter();
                                 alldata.addAll(data);
                                 recyclerView=(RecyclerView)findViewById(R.id.resturant_list);
                                 recyclerView.setHasFixedSize(true);
@@ -165,12 +172,14 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                                 recyclerView.setAdapter(adapter);
                                 locationManager.removeUpdates(this);
                                 progressDialog.dismiss();
-                                Toast.makeText(getApplicationContext(),city,Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(),city,Toast.LENGTH_LONG).show();*/
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
+
                         }
                     });
+
                    // return;
 
                 }
@@ -337,6 +346,11 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
         if(item.getItemId()==R.id.profile)
         {
             startActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
+        }
+        if(item.getItemId()==R.id.myorders)
+        {
+            startActivity(new Intent(getApplicationContext(),My_Active_Orders_Activity.class));
+
         }
         return super.onOptionsItemSelected(item);
     }

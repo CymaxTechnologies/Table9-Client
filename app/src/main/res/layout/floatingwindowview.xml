@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
 
     <RelativeLayout
@@ -24,13 +25,20 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginTop="8dp"
-                android:src="@drawable/location_24_orange" />
-
+                android:src="@drawable/mylogo" />
+            <ImageView
+                android:id="@+id/close_btn"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="40dp"
+                android:src="@drawable/ic_close"
+                tools:ignore="ContentDescription"/>
 
         </RelativeLayout>
 
         <!-- this is the expanded layout -->
         <LinearLayout
+            android:background="@drawable/background"
             android:visibility="gone"
             android:id="@+id/layoutExpanded"
             android:layout_width="match_parent"
@@ -49,7 +57,7 @@
                 android:id="@+id/buttonSimplifiedCodingExpanded"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:src="@drawable/cooking"
+                android:src="@drawable/mylogo"
                 tools:ignore="ContentDescription" />
 
             <LinearLayout
@@ -64,7 +72,7 @@
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
                     android:paddingTop="15dp"
-                    android:text="Your Cart"
+                    android:text="Your Active Orders"
                     android:textAlignment="center"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                     android:textColor="#ffffff"
@@ -75,7 +83,7 @@
                     android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="www.simplifiedcoding.net"
+                    android:text="Just sit and Order"
 
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                     android:textColor="#ffffff"

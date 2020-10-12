@@ -13,6 +13,22 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.example.menuapp.SendNotificationPack.Data;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class FloatingViewService extends Service implements View.OnClickListener {
 
@@ -21,7 +37,9 @@ public class FloatingViewService extends Service implements View.OnClickListener
     private View mFloatingView;
     private View collapsedView;
     private View expandedView;
-
+    private RecyclerView recyclerView;
+    private ImageView imageView;
+    private ArrayList<Order> list=new ArrayList<>();
     public FloatingViewService() {
     }
 
@@ -54,11 +72,45 @@ public class FloatingViewService extends Service implements View.OnClickListener
         //getting windows services and adding the floating view to it
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mWindowManager.addView(mFloatingView, params);
-
+        imageView=mFloatingView.findViewById(R.id.collapsed_iv);
+        Glide.with(getApplicationContext())
+                .load(R.drawable.mylogo)
+                .circleCrop()
+                .into(imageView);
+        ImageView closeButtonCollapsed = (ImageView) mFloatingView.findViewById(R.id.close_btn);
+        closeButtonCollapsed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //close the service and remove the from from the window
+                stopSelf();
+            }
+        });
 
         //getting the collapsed and expanded view from the floating view
         collapsedView = mFloatingView.findViewById(R.id.layoutCollapsed);
         expandedView = mFloatingView.findViewById(R.id.layoutExpanded);
+        recyclerView=mFloatingView.findViewById(R.id.my_orders_flaoting);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+     FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("my_orders").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                list.clear();
+                for(DataSnapshot x:dataSnapshot.getChildren())
+                {
+                    for(DataSnapshot d:x.getChildren())
+                    {
+                        list.add(d.getValue(Order.class));
+                    }
+                }
+                recyclerView.setAdapter(new MyOrdersAdapter(list,getApplicationContext()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         //adding click listener to close button and expanded view
 
@@ -117,4 +169,5 @@ public class FloatingViewService extends Service implements View.OnClickListener
 
         }
     }
+
 }

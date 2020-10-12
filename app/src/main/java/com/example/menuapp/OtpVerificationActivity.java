@@ -99,10 +99,21 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                     userProfile.setPassword(password);
                                     userProfile.setEmail(email);
                                     userProfile.setPhone(phone);
-                                    FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getUid()).setValue(userProfile);
-                                    Toast.makeText(OtpVerificationActivity.this,"Validation Succesfull",Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
-                                    finish();
+                                    Toast.makeText(getApplicationContext(),FirebaseAuth.getInstance().getUid(),Toast.LENGTH_LONG).show();
+                                    FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").setValue(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(OtpVerificationActivity.this,"Validation Succesfull",Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                                            finish();
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                        }
+                                    });
+
                                 }
                             });
                         }
@@ -129,7 +140,24 @@ public class OtpVerificationActivity extends AppCompatActivity {
                     //display some message here
                     Toast.makeText(OtpVerificationActivity.this,"Successfully registered",Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(OtpVerificationActivity.this, ResturantActivity.class);
-                    FirebaseDatabase.getInstance().getReference().child("users").child(FirebaseAuth.getInstance().getUid()).child("mobile").setValue(phone);
+                    UserProfile userProfile=new UserProfile();
+                    userProfile.setPassword(password);
+                    userProfile.setEmail(email);
+                    userProfile.setPhone(phone);
+                    Toast.makeText(getApplicationContext(),FirebaseAuth.getInstance().getUid(),Toast.LENGTH_LONG).show();
+                    FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").setValue(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(OtpVerificationActivity.this,"Validation Succesfull",Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                            finish();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
                     startActivity(intent);
                     finish();
                 }else{

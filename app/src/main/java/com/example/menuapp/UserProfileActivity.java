@@ -63,7 +63,7 @@ public class UserProfileActivity extends AppCompatActivity  {
         email=(TextView)findViewById(R.id.profile_email);
         phone=(TextView)findViewById(R.id.profile_mobile);
         apply=(Button)findViewById(R.id.profile_apply_changes) ;
-        DatabaseReference dr=FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid());
+        DatabaseReference dr=FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile");
         dr.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -143,7 +143,7 @@ public class UserProfileActivity extends AppCompatActivity  {
       apply.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(final View v) {
-              DatabaseReference dr=FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid());
+              DatabaseReference dr=FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile");
               dr.setValue(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
                   @Override
                   public void onSuccess(Void aVoid) {

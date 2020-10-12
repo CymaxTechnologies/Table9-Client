@@ -85,9 +85,20 @@ public class LoginActivity extends AppCompatActivity {
                             //display some message here
                             Toast.makeText(LoginActivity.this,"Successfully registered",Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(LoginActivity.this, ResturantActivity.class);
-                            FirebaseDatabase.getInstance().getReference().child("users").child(FirebaseAuth.getInstance().getUid()).child("mobile").setValue(phone.getText());
-                            startActivity(intent);
-                            finish();
+                            UserProfile userProfile=new UserProfile();
+                            userProfile.setPhone(phone.getText().toString());
+                            userProfile.setPhone(email.getText().toString());
+                            userProfile.setPassword(password.getText().toString());
+                            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").setValue(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Intent intent = new Intent(LoginActivity.this, ResturantActivity.class);
+
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
+
                         }else{
                             //display some message here
                             Toast.makeText(LoginActivity.this,"Registration Error",Toast.LENGTH_LONG).show();

@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity  {
     ArrayList<Cuisine> data=new ArrayList<>();
     ArrayList<Cuisine> cartCuisine=new ArrayList<>();
     ArrayList<Integer> cartCount=new ArrayList<>();
+    TextView resturant_title;
     Button btncart;
     String table="";
     String resturant_id="";
@@ -62,7 +63,8 @@ public class MainActivity extends AppCompatActivity  {
         resturant_name=(getSharedPreferences("global",MODE_PRIVATE).getString("name", "123"));
         table=getSharedPreferences("global",MODE_PRIVATE).getString("table", "waiting");
         searchView=(androidx.appcompat.widget.SearchView )findViewById(R.id.search) ;
-
+        resturant_title=(TextView)findViewById(R.id.resturant_title);
+        resturant_title.setText(resturant_name);
         searchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -322,6 +324,11 @@ public class MainActivity extends AppCompatActivity  {
         if(item.getItemId()==R.id.profile)
         {
             startActivity(new Intent(getApplicationContext(),UserProfileActivity.class));
+
+        }
+        if(item.getItemId()==R.id.myorders)
+        {
+            startActivity(new Intent(getApplicationContext(),My_Active_Orders_Activity.class));
 
         }
         return super.onOptionsItemSelected(item);

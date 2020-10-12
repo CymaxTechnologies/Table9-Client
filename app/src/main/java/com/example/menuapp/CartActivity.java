@@ -23,6 +23,7 @@ import com.example.menuapp.SendNotificationPack.Client;
 import com.example.menuapp.SendNotificationPack.Data;
 import com.example.menuapp.SendNotificationPack.MyResponse;
 import com.example.menuapp.SendNotificationPack.NotificationSender;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -191,14 +192,20 @@ public class CartActivity extends AppCompatActivity {
                 for (int i = 0; i < cart.size(); i++) {
                     cu.put(cart.get(i), count.get(i));
                 }
-
+                order.resturant_name=resturant_name;
+                order.setStatus("waiting");
+                order.setCustomer_id(FirebaseAuth.getInstance().getUid());
                 order.setUser_id(FirebaseAuth.getInstance().getUid());
                 order.setCuisines(cart);
                 order.setValue(Integer.toString(total));
                 order.setCount(count);
                  DatabaseReference key=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("pending").push();
                  order.setOrder_id(key.getKey());
-
+                 final ProgressDialog progressDialog=new ProgressDialog(CartActivity.this);
+                 progressDialog.setTitle("T9 App");
+                 progressDialog.setMessage("Please wait.....");
+                 progressDialog.show();
+                 FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("my_orders").child(resturant_id).child(order.order_id).setValue(order);
                  key.setValue(order).addOnSuccessListener(new OnSuccessListener<Void>() {
                      @Override
                      public void onSuccess(Void aVoid) {
@@ -212,6 +219,13 @@ public class CartActivity extends AppCompatActivity {
 
                          sendNotifications();
                          finish();
+                         progressDialog.dismiss();
+                     }
+                 }).addOnFailureListener(new OnFailureListener() {
+                     @Override
+                     public void onFailure(@NonNull Exception e) {
+                         Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                         progressDialog.dismiss();
                      }
                  });
 
