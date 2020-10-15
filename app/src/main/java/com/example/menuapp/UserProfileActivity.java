@@ -24,6 +24,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -148,6 +150,12 @@ public class UserProfileActivity extends AppCompatActivity  {
                   @Override
                   public void onSuccess(Void aVoid) {
                       Snackbar.make(v,"Profile Updated Succesfuly",Snackbar.LENGTH_LONG).show();
+                      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                      UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                              .setDisplayName(userProfile.name).build();
+
+                      user.updateProfile(profileUpdates);
                                     }
               }).addOnFailureListener(new OnFailureListener() {
                   @Override

@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -71,6 +73,14 @@ public class MainActivity extends AppCompatActivity  {
                 searchView.onActionViewExpanded();
             }
         });
+        GlobalVariable appState = ((GlobalVariable)getApplicationContext());
+        if(appState.count.containsKey(resturant_id)&&appState.count.size()>0)
+        {
+            cartCuisine=appState.cuise.get(resturant_id);
+            cartCount=appState.count.get(resturant_id);
+            Log.d("reserved ",Integer.toString(appState.count.size()));
+
+        }
           getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.logo_24);
                   FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
@@ -79,7 +89,7 @@ public class MainActivity extends AppCompatActivity  {
                 if(dataSnapshot.exists())
                 {
                     String s=dataSnapshot.getValue(String.class);
-                    Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+                 //   Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
                     table=s;
                     if(s.equals("not_available"))
                     {
@@ -94,7 +104,7 @@ public class MainActivity extends AppCompatActivity  {
                     else if(Integer.parseInt(s)<1000)
                     {
                         String table=dataSnapshot.getValue(String.class);
-
+                        getSupportActionBar().setTitle("Table no "+table);
                         Toast.makeText(getApplicationContext(),"You have assigned a table no "+table,Toast.LENGTH_LONG).show();
                         //   startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
 
@@ -144,6 +154,12 @@ public class MainActivity extends AppCompatActivity  {
                    i.putExtra("name",resturant_name);
                    i.putExtra("cartI",cartCuisine);
                    i.putExtra("cartC",cartCount);
+                   GlobalVariable appState = ((GlobalVariable)getApplicationContext());
+
+                       appState.cuise.put(resturant_id,cartCuisine);
+                       appState.count.put(resturant_id,cartCount);
+
+
                    try {
                        new NotiHelper(getApplicationContext()).SendNotification(resturant_id,"A new Order","A new Order from table no "+table);
                    } catch (JSONException e) {
@@ -332,5 +348,33 @@ public class MainActivity extends AppCompatActivity  {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    // Before 2.0
+
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        GlobalVariable appState = ((GlobalVariable)getApplicationContext());
+
+        if(appState.count.containsKey(resturant_id)&&appState.count.size()>0)
+        {
+
+            cartCuisine=appState.cuise.get(resturant_id);
+            cartCount=appState.count.get(resturant_id);
+            Log.d("reserved ",Integer.toString(appState.count.size()));
+
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        GlobalVariable appState = ((GlobalVariable)getApplicationContext());
+
+        appState.cuise.put(resturant_id,cartCuisine);
+        appState.count.put(resturant_id,cartCount);
     }
 }
