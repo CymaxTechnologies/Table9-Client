@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.renderscript.RenderScript;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -40,6 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 
+import java.lang.reflect.Array;
 import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity  {
     ArrayList<Cuisine> data=new ArrayList<>();
     ArrayList<Cuisine> cartCuisine=new ArrayList<>();
     ArrayList<Integer> cartCount=new ArrayList<>();
+    ArrayList<Cuisine> tcart=new ArrayList<>();
+    ArrayList<Integer> tcount=new ArrayList<>();
     TextView resturant_title;
     Button btncart;
     String table="";
@@ -60,7 +64,12 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+        cartCuisine.clear();
+        cartCount.clear();
+        tcart.clear();
+        tcount.clear();
         resturant_id= getSharedPreferences("global",MODE_PRIVATE).getString("resturant_id", "123");
         resturant_name=(getSharedPreferences("global",MODE_PRIVATE).getString("name", "123"));
         table=getSharedPreferences("global",MODE_PRIVATE).getString("table", "waiting");
@@ -73,14 +82,7 @@ public class MainActivity extends AppCompatActivity  {
                 searchView.onActionViewExpanded();
             }
         });
-        GlobalVariable appState = ((GlobalVariable)getApplicationContext());
-        if(appState.count.containsKey(resturant_id)&&appState.count.size()>0)
-        {
-            cartCuisine=appState.cuise.get(resturant_id);
-            cartCount=appState.count.get(resturant_id);
-            Log.d("reserved ",Integer.toString(appState.count.size()));
 
-        }
           getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.logo_24);
                   FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
@@ -122,8 +124,58 @@ public class MainActivity extends AppCompatActivity  {
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.main_menu);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists())
+                {
+                    tcart.clear();
+                   for(DataSnapshot d:dataSnapshot.getChildren())
+                   {
+                       tcart.add(d.getValue(Cuisine.class));
 
 
+                   }
+
+                    //count+=cartCuisine.size();
+                    }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists())
+                {
+                    cartCount.clear();
+                    cartCuisine.clear();
+                    count=0;
+                    tcount.clear();
+                    for(DataSnapshot d:dataSnapshot.getChildren())
+                    {
+                        tcount.add(d.getValue(Integer.class));
+                    }
+                    for(int i:tcount)
+                    {
+                        count+=i;
+                    }
+                    cartCuisine.addAll(tcart);
+                    cartCount.addAll(tcount);
+                    btncart.setVisibility(View.VISIBLE);
+                    btncart.setText(Integer.toString(count)+" Items in Cart");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child(resturant_id).child("Cuisine");
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -132,6 +184,7 @@ public class MainActivity extends AppCompatActivity  {
                 {
                     Cuisine co=d.getValue(Cuisine.class);
                     data.add(co);
+
                 }
                 all.addAll(data);
                 recyclerView.setAdapter(new RecommendedAdapter());
@@ -154,10 +207,9 @@ public class MainActivity extends AppCompatActivity  {
                    i.putExtra("name",resturant_name);
                    i.putExtra("cartI",cartCuisine);
                    i.putExtra("cartC",cartCount);
-                   GlobalVariable appState = ((GlobalVariable)getApplicationContext());
+                  // FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").setValue(cartCuisine);
+                   //FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").setValue(cartCount);
 
-                       appState.cuise.put(resturant_id,cartCuisine);
-                       appState.count.put(resturant_id,cartCount);
 
 
                    try {
@@ -317,10 +369,23 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
-        cartCuisine.clear();
-        cartCount.clear();
-        count=0;
-        btncart.setVisibility(View.GONE);
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(count>0)
+        {
+            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").setValue(cartCuisine);
+            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").setValue(cartCount);
+
+
+
+
+
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -354,27 +419,5 @@ public class MainActivity extends AppCompatActivity  {
     // Before 2.0
 
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        GlobalVariable appState = ((GlobalVariable)getApplicationContext());
 
-        if(appState.count.containsKey(resturant_id)&&appState.count.size()>0)
-        {
-
-            cartCuisine=appState.cuise.get(resturant_id);
-            cartCount=appState.count.get(resturant_id);
-            Log.d("reserved ",Integer.toString(appState.count.size()));
-
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        GlobalVariable appState = ((GlobalVariable)getApplicationContext());
-
-        appState.cuise.put(resturant_id,cartCuisine);
-        appState.count.put(resturant_id,cartCount);
-    }
 }

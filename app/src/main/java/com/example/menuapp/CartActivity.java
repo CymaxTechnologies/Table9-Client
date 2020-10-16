@@ -38,6 +38,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import retrofit2.Call;
@@ -220,7 +221,7 @@ public class CartActivity extends AppCompatActivity {
                 order.setCuisines(cart);
                 order.setValue(Integer.toString(total));
                 order.setCount(count);
-                 DatabaseReference key=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("pending").push();
+                DatabaseReference key=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("pending").push();
                  order.setOrder_id(key.getKey());
                  final ProgressDialog progressDialog=new ProgressDialog(CartActivity.this);
                  progressDialog.setTitle("T9 App");
@@ -232,14 +233,20 @@ public class CartActivity extends AppCompatActivity {
                      public void onSuccess(Void aVoid) {
                          Toast.makeText(getApplicationContext(),"Order placed Succesfully",Toast.LENGTH_LONG).show();
                         // progressDialog.show();
+                         FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).removeValue();
                          Intent i=new Intent(getApplicationContext(),WaitingActivity.class);
                          i.putExtra("table",table);
                          i.putExtra("name",resturant_name);
                          i.putExtra("resturant_id",resturant_id);
-                         GlobalVariable appState = ((GlobalVariable)getApplicationContext());
-
-                         appState.cuise.get(resturant_id).clear();
-                         appState.count.get(resturant_id).clear();
+                         Notification n=new Notification();
+                         notification.setUser_id(FirebaseAuth.getInstance().getUid());
+                         notification.setTime(new Date().toString());
+                         DatabaseReference dbr=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("notifications").push();
+                         notification.setId(dbr.getKey());
+                         notification.setTable_no(table);
+                         Toast.makeText(getApplicationContext(),"Getting "+table,Toast.LENGTH_LONG).show();
+                         notification.setMessage("New Order");
+                         dbr.setValue(notification);
                          startActivity(i);
 
                          sendNotifications();
@@ -370,9 +377,20 @@ public class CartActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        GlobalVariable appState = ((GlobalVariable)getApplicationContext());
 
-        appState.cuise.put(resturant_id,cart);
-        appState.count.put(resturant_id,count);
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").setValue(cart);
+            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").setValue(count);
+
+
+
+
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 }

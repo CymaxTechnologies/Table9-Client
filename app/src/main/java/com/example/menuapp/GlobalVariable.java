@@ -1,7 +1,6 @@
 package com.example.menuapp;
 
 import android.app.Application;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,8 +16,17 @@ public class GlobalVariable extends Application
 
 
 
-    HashMap<String, ArrayList<Cuisine>> cuise=new HashMap<>();
-    HashMap<String, ArrayList<Integer>> count=new HashMap<>();
+    HashMap<String, ArrayList<Cuisine>> cuise;
+
+    public HashMap<String, ArrayList<Integer>> getCount() {
+        return count;
+    }
+
+    public void setCount(HashMap<String, ArrayList<Integer>> count) {
+        this.count = count;
+    }
+
+    HashMap<String, ArrayList<Integer>> count;
 
 
 }//End Class
