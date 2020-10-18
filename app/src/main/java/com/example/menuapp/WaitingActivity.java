@@ -7,6 +7,7 @@ import androidx.cardview.widget.CardView;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -36,11 +37,18 @@ public class WaitingActivity extends AppCompatActivity {
     String resturant_name;
     DatabaseReference ref;
     NotiHelper notiHelper;
+    String user_name;
+    String user_email;
+    String user_phone_no;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_waiting);
         notiHelper=new NotiHelper(getApplicationContext());
+        user_name= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uname","123");
+        user_phone_no= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uphone","123");
+        user_email= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uemail","123");
+
         table=(String)getIntent().getStringExtra("table");
         resturant_id=(String)getIntent().getStringExtra("resturant_id");
         resturant_name=(String)getIntent().getStringExtra("name");
@@ -76,7 +84,7 @@ public class WaitingActivity extends AppCompatActivity {
                 n.setUser_id(FirebaseAuth.getInstance().getUid());
                 n.setUser_id("123");
                 n.setResturant_id(resturant_id);
-                n.setMessage("Want to settle bill \n"+"Time : "+dateFormat.format(date));
+                n.setMessage("Want to settle bill \n"+"Time : "+dateFormat.format(date)+" by "+user_name);
                 DatabaseReference dr=ref.push();
                 n.setId(dr.getKey());
                 dr.setValue(n).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -86,7 +94,7 @@ public class WaitingActivity extends AppCompatActivity {
                     }
                 });
                 try {
-                    notiHelper.SendNotification(resturant_id,"Notification","Payment Settle request from table no "+table+"\n Time "+dateFormat.format(date));
+                    notiHelper.SendNotification(resturant_id,"Notification","Payment Settle request from table no "+table+"\n Time "+dateFormat.format(date)+" by "+user_name);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -110,11 +118,11 @@ public class WaitingActivity extends AppCompatActivity {
                 n.setTable_no(table);
                 n.setUser_id("123");
                 n.setResturant_id(resturant_id);
-                n.setMessage("Calling for waiter \n"+"Time : "+dateFormat.format(date));
+                n.setMessage("Calling for waiter \n"+"Time : "+dateFormat.format(date)+" by "+user_name);
                 DatabaseReference dr=ref.push();
                 n.setId(dr.getKey());
                 try {
-                    notiHelper.SendNotification(resturant_id,"Notification","Waiter call from table no "+table+" \nTime "+dateFormat.format(date));
+                    notiHelper.SendNotification(resturant_id,"Notification","Waiter call from table no "+table+" \nTime "+dateFormat.format(date)+" by "+user_name);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -141,11 +149,11 @@ public class WaitingActivity extends AppCompatActivity {
                 n.setUser_id("123");
                 n.setUser_id(FirebaseAuth.getInstance().getUid());
                 n.setResturant_id(resturant_id);
-                n.setMessage("Asking for Cutlery\n"+"Time : "+dateFormat.format(date));
+                n.setMessage("Asking for Cutlery\n"+"Time : "+dateFormat.format(date)+" by "+user_name);
                 DatabaseReference dr=ref.push();
                 n.setId(dr.getKey());
                 try {
-                    notiHelper.SendNotification(resturant_id,"Notification","Cutlery request from table no "+table+"\nTime "+dateFormat.format(date));
+                    notiHelper.SendNotification(resturant_id,"Notification","Cutlery request from table no "+table+"\nTime "+dateFormat.format(date)+" by "+user_name);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -173,11 +181,11 @@ public class WaitingActivity extends AppCompatActivity {
                 n.setUser_id("123");
                 n.setUser_id(FirebaseAuth.getInstance().getUid());
                 n.setResturant_id(resturant_id);
-                n.setMessage("Reported a problem \n"+"Time : "+date.toString());
+                n.setMessage("Reported a problem \n"+"Time : "+date.toString()+" by "+user_name);
                 DatabaseReference dr=ref.push();
                 n.setId(dr.getKey());
                 try {
-                    notiHelper.SendNotification(resturant_id,"Notification","Reporting Issue request from table no "+table+"\n "+dateFormat.format(date));
+                    notiHelper.SendNotification(resturant_id,"Notification","Reporting Issue request from table no "+table+"\n "+dateFormat.format(date)+" by "+user_name);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

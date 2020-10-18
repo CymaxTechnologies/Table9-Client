@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,7 +38,9 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONException;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -56,6 +59,9 @@ public class CartActivity extends AppCompatActivity {
     String resturant_id="";
     String resturant_name="";
     UserProfile profile=new UserProfile();
+    String user_name;
+    String user_email;
+    String user_phone_no;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +72,11 @@ public class CartActivity extends AppCompatActivity {
         progressDialog=new ProgressDialog(CartActivity.this);
         progressDialog.setTitle("T9 App");
         progressDialog.setMessage("Please wait...");
-       // progressDialog.show();
+        user_name= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uname","123");
+        user_phone_no= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uphone","123");
+        user_email= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uemail","123");
+
+        // progressDialog.show();
         cartSend=findViewById(R.id.cartSend);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
@@ -104,7 +114,8 @@ public class CartActivity extends AppCompatActivity {
 
                     drf.setValue(notification);
                     try {
-                        new NotiHelper(CartActivity.this).SendNotification(resturant_id,"New Arrival","Customer is waiting for table "+"Customer : "+FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                        String s=user_name+" is waiting for table \n"+user_phone_no+"\n"+user_email;
+                        new NotiHelper(CartActivity.this).SendNotification(resturant_id,"A new Custmer",s);
                         Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -178,8 +189,8 @@ public class CartActivity extends AppCompatActivity {
 
                     drf.setValue(notification);
                     try {
-                        new NotiHelper(CartActivity.this).SendNotification(resturant_id,"New Arrival","Customer is waiting for table \n"+"Customer : ");
-                        Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
+                        String s=user_name+" is waiting for table \n"+user_phone_no+"\n"+user_email;
+                        new NotiHelper(CartActivity.this).SendNotification(resturant_id,"A new Customer",s);                        Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -214,7 +225,10 @@ public class CartActivity extends AppCompatActivity {
                 for (int i = 0; i < cart.size(); i++) {
                     cu.put(cart.get(i), count.get(i));
                 }
+
+                String timeStamp = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
                 order.resturant_name=resturant_name;
+                order.setCheck_in_time(timeStamp);
                 order.setStatus("waiting");
                 order.setCustomer_id(FirebaseAuth.getInstance().getUid());
                 order.setUser_id(FirebaseAuth.getInstance().getUid());
@@ -233,6 +247,7 @@ public class CartActivity extends AppCompatActivity {
                      public void onSuccess(Void aVoid) {
                          Toast.makeText(getApplicationContext(),"Order placed Succesfully",Toast.LENGTH_LONG).show();
                         // progressDialog.show();
+                         FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("user").setValue(FirebaseAuth.getInstance().getUid());
                          FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).removeValue();
                          Intent i=new Intent(getApplicationContext(),WaitingActivity.class);
                          i.putExtra("table",table);
@@ -244,12 +259,17 @@ public class CartActivity extends AppCompatActivity {
                          DatabaseReference dbr=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("notifications").push();
                          notification.setId(dbr.getKey());
                          notification.setTable_no(table);
-                         Toast.makeText(getApplicationContext(),"Getting "+table,Toast.LENGTH_LONG).show();
-                         notification.setMessage("New Order");
+                        // Toast.makeText(getApplicationContext(),"Getting "+table,Toast.LENGTH_LONG).show();
+                         notification.setMessage("New Order by "+user_name+"\n"+user_phone_no);
                          dbr.setValue(notification);
                          startActivity(i);
-
-                         sendNotifications();
+                         String s="\nNew Order by "+user_name+"\n"+user_phone_no;
+                         try {
+                             new NotiHelper(CartActivity.this).SendNotification(resturant_id,"A new Order",s);
+                         } catch (JSONException e) {
+                             e.printStackTrace();
+                         }
+                       //  sendNotifications();
                          finish();
                          progressDialog.dismiss();
                      }

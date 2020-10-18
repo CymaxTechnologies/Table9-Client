@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.renderscript.RenderScript;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -58,6 +59,9 @@ public class MainActivity extends AppCompatActivity  {
     String table="";
     String resturant_id="";
     String resturant_name;
+    String user_name;
+    String user_email;
+    String user_phone_no;
     androidx.appcompat.widget.SearchView searchView;
     int count=0;
     ArrayList<Cuisine> all=new ArrayList<>();
@@ -70,6 +74,9 @@ public class MainActivity extends AppCompatActivity  {
         cartCount.clear();
         tcart.clear();
         tcount.clear();
+        user_name= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uname","123");
+        user_phone_no= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uphone","123");
+        user_email= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uemail","123");
         resturant_id= getSharedPreferences("global",MODE_PRIVATE).getString("resturant_id", "123");
         resturant_name=(getSharedPreferences("global",MODE_PRIVATE).getString("name", "123"));
         table=getSharedPreferences("global",MODE_PRIVATE).getString("table", "waiting");

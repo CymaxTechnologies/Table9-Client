@@ -40,11 +40,11 @@ public class MyOrdersAdapter extends RecyclerView.Adapter<MyOrdersAdapter.holder
                holder.recyclerView.setAdapter(new OrderItemSingleOrderAdapter(order.getCuisines(),order.getCount()));
                if(order.getStatus().equals("waiting"))
                {
-                   holder.img.setImageResource(R.drawable.waiting_n);
+                   holder.img.setImageResource(R.drawable.waiting_icon);
                }
                else if(order.getStatus().equals("Accepted"))
                {
-                   holder.img.setImageResource(R.drawable.accepted_n);
+                   holder.img.setImageResource(R.drawable.accepted_icon);
 
                }
                else if(order.getStatus().equals("Cooking"))
@@ -54,12 +54,12 @@ public class MyOrdersAdapter extends RecyclerView.Adapter<MyOrdersAdapter.holder
                }
                else if(order.getStatus().equals("Served"))
                {
-                   holder.img.setImageResource(R.drawable.served_n);
+                   holder.img.setImageResource(R.drawable.finish_icon);
 
                }
                else if(order.getStatus().equals("Rejeceted"))
                {
-                   holder.img.setImageResource(R.drawable.rejected_n);
+                   holder.img.setImageResource(R.drawable.rejected_icon);
 
                }
            holder.cardView.setOnClickListener(new View.OnClickListener() {
