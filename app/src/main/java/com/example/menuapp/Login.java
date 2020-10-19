@@ -39,11 +39,15 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login2);
+        bar=new ProgressDialog(Login.this);
+        bar.setCancelable(false);
+        bar.setTitle("T9 App");
+        bar.setMessage("Please wait....");
         getSupportActionBar().hide();
 
         if(FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
-
+           bar.show();
             FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -56,11 +60,12 @@ public class Login extends AppCompatActivity {
                     editor.apply();
                     startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
                     finish();
+                    bar.dismiss();
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                      bar.dismiss();
                 }
             });
 
@@ -93,8 +98,29 @@ public class Login extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful())
                             {
-                                startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
-                                finish();
+                                bar.show();
+                                FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
+                                        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                        SharedPreferences.Editor editor=sharedPreferences.edit();
+                                        editor.putString("uname",userProfile.name);
+                                        editor.putString("uphone",userProfile.phone);
+                                        editor.putString("uemail",userProfile.email);
+                                        editor.apply();
+                                        startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                                        finish();
+                                        bar.dismiss();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                          bar.dismiss();
+                                    }
+                                });
+
+
                             }
                             else
                             {

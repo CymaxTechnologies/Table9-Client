@@ -86,18 +86,6 @@ public class CartActivity extends AppCompatActivity {
         notification.setUser_id(FirebaseAuth.getInstance().getUid());
         notification.setResturant_id(resturant_id);
 
-        FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                 profile=dataSnapshot.getValue(UserProfile.class);
-            }
-
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
         notification.setMessage("New Client request from user "+FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
         if(!table.equals("")&&table!=null)
         {
@@ -109,7 +97,7 @@ public class CartActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(!dataSnapshot.exists())
                 {
-                    final DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").push();
+                   /* final DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").push();
                     notification.setId(drf.getKey());
 
                     drf.setValue(notification);
@@ -119,8 +107,8 @@ public class CartActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
-                    }
-             FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
+                    }*/
+            // FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
 
                 }
             }
@@ -186,17 +174,19 @@ public class CartActivity extends AppCompatActivity {
 
                     Toast.makeText(getApplicationContext(),"Please wait you are not assigned a table",Toast.LENGTH_LONG).show();
                     DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").push();
-
+                    String s=user_name+" is waiting for table \n"+user_phone_no+"\n"+user_email;
+                    notification.setMessage(s);
                     drf.setValue(notification);
                     try {
-                        String s=user_name+" is waiting for table \n"+user_phone_no+"\n"+user_email;
+                         s=user_name+" is waiting for table \n"+user_phone_no+"\n"+user_email;
                         new NotiHelper(CartActivity.this).SendNotification(resturant_id,"A new Customer",s);                        Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     final boolean[] flag = {false};
                    // FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
-                   DatabaseReference db= FirebaseDatabase.getInstance().getReference().child(resturant_id).child("notifications").push();
+                   DatabaseReference db= FirebaseDatabase.getInstance().getReference().child(resturant_id).child("notifications").push();db.getKey();
+                   notification.setId(db.getKey());
                     db.setValue(notification).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -212,7 +202,7 @@ public class CartActivity extends AppCompatActivity {
 
                     return ;
                 }
-                if(table.equals("not_available"))
+                else if(table.equals("not_available"))
                 {
                     Toast.makeText(getApplicationContext(),"No table Available",Toast.LENGTH_LONG).show();
                    return;
@@ -292,6 +282,11 @@ public class CartActivity extends AppCompatActivity {
     void  updateButton()
     {
         total=0;
+        if(cart.size()==0)
+        {
+            cartSend.setText("Total Rs "+Integer.toString(total));
+            return;
+        }
         for (int i = 0; i <cart.size() ; i++) {
             total+=Integer.parseInt(cart.get(i).getPrice())*count.get(i);
             cartSend.setText("Total Rs "+Integer.toString(total));
@@ -403,6 +398,12 @@ public class CartActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event)  {
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if(cart.size()==0)
+            {
+                FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").removeValue();
+                //FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").removeValue();
+
+            }
             FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").setValue(cart);
             FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").setValue(count);
 

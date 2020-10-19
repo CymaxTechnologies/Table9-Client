@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,7 +22,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
@@ -104,8 +109,26 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(Void aVoid) {
                                             Toast.makeText(OtpVerificationActivity.this,"Validation Succesfull",Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
-                                            finish();
+                                            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
+                                                    SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                                    SharedPreferences.Editor editor=sharedPreferences.edit();
+                                                    editor.putString("uname",userProfile.name);
+                                                    editor.putString("uphone",userProfile.phone);
+                                                    editor.putString("uemail",userProfile.email);
+                                                    editor.apply();
+                                                    startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                                                    finish();
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
+
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
@@ -149,8 +172,27 @@ public class OtpVerificationActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(OtpVerificationActivity.this,"Validation Succesfull",Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
-                            finish();
+                            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
+                                    SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                    SharedPreferences.Editor editor=sharedPreferences.edit();
+                                    editor.putString("uname",userProfile.name);
+                                    editor.putString("uphone",userProfile.phone);
+                                    editor.putString("uemail",userProfile.email);
+                                    editor.apply();
+                                    startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                                    finish();
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override

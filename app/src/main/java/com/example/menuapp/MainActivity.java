@@ -15,6 +15,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.renderscript.RenderScript;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -174,6 +177,15 @@ public class MainActivity extends AppCompatActivity  {
                     cartCount.addAll(tcount);
                     btncart.setVisibility(View.VISIBLE);
                     btncart.setText(Integer.toString(count)+" Items in Cart");
+
+
+                }
+                else
+                {
+                    cartCount.clear();
+                    cartCuisine.clear();
+                    btncart.setVisibility(View.GONE);
+                    count=0;
                 }
 
             }
@@ -219,11 +231,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
 
-                   try {
-                       new NotiHelper(getApplicationContext()).SendNotification(resturant_id,"A new Order","A new Order from table no "+table);
-                   } catch (JSONException e) {
-                       e.printStackTrace();
-                   }
+
                    startActivity(i);
                   // finish();
 
@@ -279,7 +287,19 @@ public class MainActivity extends AppCompatActivity  {
         public void onBindViewHolder(final RecommendedAdapter.holder holder, int position) {
             final Cuisine cuisine=data.get(position);
             holder.name.setText(cuisine.getCousine_name());
-            holder.description.setText(cuisine.getAbout());
+            if(cuisine.price.equals(cuisine.discount_price))
+            {
+                holder.description.setText("Rs: "+cuisine.price);
+            }
+            else
+            {
+                holder.description.setText("Rs: "+cuisine.price+"   "+cuisine.discount_price,TextView.BufferType.SPANNABLE);
+
+                Spannable spannable = (Spannable) holder.description.getText();
+                spannable.setSpan(new StrikethroughSpan(), 4, 9, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            }
+
             holder.availability.setText(cuisine.getTimming());
             holder.ratingBar.setRating(5);
             Glide.with(getApplicationContext())
