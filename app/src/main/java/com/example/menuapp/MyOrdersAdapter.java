@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -41,10 +42,12 @@ public class MyOrdersAdapter extends RecyclerView.Adapter<MyOrdersAdapter.holder
                if(order.getStatus().equals("waiting"))
                {
                    holder.img.setImageResource(R.drawable.waiting_icon);
+
                }
                else if(order.getStatus().equals("Accepted"))
                {
                    holder.img.setImageResource(R.drawable.accepted_icon);
+                   Toast.makeText(c,"Your order has been accepted ",Toast.LENGTH_LONG).show();
 
                }
                else if(order.getStatus().equals("Cooking"))
@@ -60,6 +63,7 @@ public class MyOrdersAdapter extends RecyclerView.Adapter<MyOrdersAdapter.holder
                else if(order.getStatus().equals("Rejeceted"))
                {
                    holder.img.setImageResource(R.drawable.rejected_icon);
+                   Toast.makeText(c,"Your order has been accepted ",Toast.LENGTH_LONG).show();
 
                }
            holder.cardView.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +71,7 @@ public class MyOrdersAdapter extends RecyclerView.Adapter<MyOrdersAdapter.holder
                public void onClick(View v) {
                    Intent I=new Intent(c,WaitingActivity.class);
                    I.putExtra("resturant_id",order.getResturant_id());
-                   I.putExtra("resturant_id",order.getTable());
+                   I.putExtra("table",order.getTable());
                    I.putExtra("name",order.getResturant_name());
                    c.startActivity(I);
                }

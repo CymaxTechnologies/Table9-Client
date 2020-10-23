@@ -30,4 +30,13 @@ public class ArrivingBillActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, ResturantActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+        super.onBackPressed();
+
+    }
 }

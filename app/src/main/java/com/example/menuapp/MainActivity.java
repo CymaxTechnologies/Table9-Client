@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity  {
                 {
                     String s=dataSnapshot.getValue(String.class);
                  //   Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
-                    table=s;
                     if(s.equals("not_available"))
                     {
                         Toast.makeText(getApplicationContext(),"No Any table assigned",Toast.LENGTH_LONG).show();
@@ -228,7 +227,7 @@ public class MainActivity extends AppCompatActivity  {
                    i.putExtra("cartC",cartCount);
                   // FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").setValue(cartCuisine);
                    //FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").setValue(cartCount);
-
+                   finish();
 
 
 
@@ -243,7 +242,8 @@ public class MainActivity extends AppCompatActivity  {
             btncart.setVisibility(View.GONE);
         }
 
-        Toast.makeText(getApplicationContext(), Integer.toString(data.size()), Toast.LENGTH_LONG).show();
+     //
+        //   Toast.makeText(getApplicationContext(), Integer.toString(data.size()), Toast.LENGTH_LONG).show();
         final RecommendedAdapter adapter = new RecommendedAdapter();
 
         RecyclerView mainmenu = (RecyclerView) findViewById(R.id.main_menu);

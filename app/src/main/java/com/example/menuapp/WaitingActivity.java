@@ -101,12 +101,13 @@ public class WaitingActivity extends AppCompatActivity {
                 dr=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("notification").child(n.getId());
                 dr.setValue(n);
                 getSharedPreferences("global",MODE_PRIVATE).edit().clear().commit();
-               startActivity(new Intent(getApplicationContext(),ArrivingBillActivity.class));
+                FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).removeValue();
+            startActivity(new Intent(getApplicationContext(),ArrivingBillActivity.class));
                finish();
 
             }
         });
-        ask.setOnClickListener(new View.OnClickListener() {
+        waiti.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Notification n=new Notification();
@@ -137,7 +138,7 @@ public class WaitingActivity extends AppCompatActivity {
 
             }
         });
-        cuttlery.setOnClickListener(new View.OnClickListener() {
+        cuti.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Notification n=new Notification();
@@ -169,7 +170,7 @@ public class WaitingActivity extends AppCompatActivity {
 
             }
         });
-        repord.setOnClickListener(new View.OnClickListener() {
+        repi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Notification n=new Notification();

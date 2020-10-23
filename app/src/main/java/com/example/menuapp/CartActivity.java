@@ -108,7 +108,7 @@ public class CartActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }*/
-            // FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
+             FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
 
                 }
             }
@@ -127,7 +127,7 @@ public class CartActivity extends AppCompatActivity {
                 if(dataSnapshot.exists())
                 {
                     String s=dataSnapshot.getValue(String.class);
-                    Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+                 //   Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
                     table=s;
                     if(s.equals("not_available"))
                     {
@@ -173,10 +173,11 @@ public class CartActivity extends AppCompatActivity {
                 {
 
                     Toast.makeText(getApplicationContext(),"Please wait you are not assigned a table",Toast.LENGTH_LONG).show();
-                    DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").push();
+                    DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").child(FirebaseAuth.getInstance().getUid());
                     String s=user_name+" is waiting for table \n"+user_phone_no+"\n"+user_email;
                     notification.setMessage(s);
                     drf.setValue(notification);
+                    notification.setId(FirebaseAuth.getInstance().getUid());
                     try {
                          s=user_name+" is waiting for table \n"+user_phone_no+"\n"+user_email;
                         new NotiHelper(CartActivity.this).SendNotification(resturant_id,"A new Customer",s);                        Toast.makeText(getApplicationContext(),"Your request is sent",Toast.LENGTH_LONG).show();
@@ -185,7 +186,7 @@ public class CartActivity extends AppCompatActivity {
                     }
                     final boolean[] flag = {false};
                    // FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).setValue("waiting");
-                   DatabaseReference db= FirebaseDatabase.getInstance().getReference().child(resturant_id).child("notifications").push();db.getKey();
+                   DatabaseReference db= FirebaseDatabase.getInstance().getReference().child(resturant_id).child("notifications").child(FirebaseAuth.getInstance().getUid());
                    notification.setId(db.getKey());
                     db.setValue(notification).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -246,12 +247,16 @@ public class CartActivity extends AppCompatActivity {
                          Notification n=new Notification();
                          notification.setUser_id(FirebaseAuth.getInstance().getUid());
                          notification.setTime(new Date().toString());
+                         Toast.makeText(getApplicationContext(),"Please wait till your order is accepted",Toast.LENGTH_LONG).show();
                          DatabaseReference dbr=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("notifications").push();
                          notification.setId(dbr.getKey());
                          notification.setTable_no(table);
                         // Toast.makeText(getApplicationContext(),"Getting "+table,Toast.LENGTH_LONG).show();
                          notification.setMessage("New Order by "+user_name+"\n"+user_phone_no);
                          dbr.setValue(notification);
+                         FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).removeValue();
+
+                         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                          startActivity(i);
                          String s="\nNew Order by "+user_name+"\n"+user_phone_no;
                          try {
@@ -284,12 +289,12 @@ public class CartActivity extends AppCompatActivity {
         total=0;
         if(cart.size()==0)
         {
-            cartSend.setText("Total Rs "+Integer.toString(total));
+            cartSend.setText("Items :"+cart.size()+"Total Rs "+Integer.toString(total)+"  Place order");
             return;
         }
         for (int i = 0; i <cart.size() ; i++) {
             total+=Integer.parseInt(cart.get(i).getPrice())*count.get(i);
-            cartSend.setText("Total Rs "+Integer.toString(total));
+            cartSend.setText("Items :"+cart.size()+"Total Rs "+Integer.toString(total)+"  Place order");
         }
 
     }
@@ -400,12 +405,15 @@ public class CartActivity extends AppCompatActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if(cart.size()==0)
             {
-                FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").removeValue();
+                FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).removeValue();
                 //FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").removeValue();
 
             }
             FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").setValue(cart);
             FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").setValue(count);
+            Intent i=new Intent(getApplicationContext(),MainActivity.class);
+            startActivity(i);
+            finish();
 
 
 
