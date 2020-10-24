@@ -44,19 +44,10 @@
             android:textColor="@android:color/white"
             android:textSize="18sp"></TextView>
 
-        <EditText
-            android:drawablePadding="5dp"
-            android:drawableLeft="@drawable/ic_baseline_email_24"
-            android:id="@+id/lemail"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_margin="10dp"
-            android:inputType="textEmailAddress"
-            android:background="@drawable/edittext"
-            android:hint="1234@sample.com"></EditText>
+
 
         <EditText
-            android:id="@+id/lpassword"
+            android:id="@+id/lphone"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_margin="10dp"
@@ -65,23 +56,16 @@
             android:drawableLeft="@drawable/ic_baseline_lock_24"
 
             android:drawablePadding="5dp"
-            android:hint="*******"
-            android:inputType="textPassword"></EditText>
+            android:hint="9988......"
+            android:inputType="phone"></EditText>
 
-        <TextView
-            android:layout_marginTop="10dp"
-            android:textColor="@android:color/white"
-            android:id="@+id/forgot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Forgot password"></TextView>
 
         <Button
             android:id="@+id/btn_login"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:textColor="@color/colorPrimary"
-            android:text="Login"
+            android:text="Next"
 
             android:padding="10dp"
             android:layout_margin="20dp"
@@ -89,13 +73,7 @@
 
             android:textColor="#0FFFFFFF"></Button>
 
-        <TextView
-            android:id="@+id/signup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="Dont Have account?  Get one"
-            android:textColor="@android:color/white"></TextView>
+
     </LinearLayout>
 
 </LinearLayout>

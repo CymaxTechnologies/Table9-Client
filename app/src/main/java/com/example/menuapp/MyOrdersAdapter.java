@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,9 +45,11 @@ public class MyOrdersAdapter extends RecyclerView.Adapter<MyOrdersAdapter.holder
                {
                    holder.img.setImageResource(R.drawable.waiting_icon);
 
+
                }
                else if(order.getStatus().equals("Accepted"))
                {
+                 
                    holder.img.setImageResource(R.drawable.accepted_icon);
                    Toast.makeText(c,"Your order has been accepted ",Toast.LENGTH_LONG).show();
 

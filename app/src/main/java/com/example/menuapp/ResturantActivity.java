@@ -127,19 +127,27 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 data.clear();
                 for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    data.add(d.getValue(Resturant.class));
-                 //   Toast.makeText(getApplicationContext(), data.get(0).getName(), Toast.LENGTH_SHORT).show();
-
+                    Resturant r=d.getValue(Resturant.class);
+                    if(r.verified.equals("no"))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        data.add(r);
+                    }
+                  //   Toast.makeText(getApplicationContext(), data.get(0).getName(), Toast.LENGTH_SHORT).show();
+                }
                     adapter=new ResturantAdapter();
                     alldata.addAll(data);
                     recyclerView=(RecyclerView)findViewById(R.id.resturant_list);
                     recyclerView.setHasFixedSize(true);
                     recyclerView.setLayoutManager(new LinearLayoutManager(ResturantActivity.this));
                     recyclerView.setAdapter(adapter);
-                    progressDialog.dismiss();                }
+                    progressDialog.dismiss();
                 final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-                if (ActivityCompat.checkSelfPermission(ResturantActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ResturantActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+               if (ActivityCompat.checkSelfPermission(ResturantActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ResturantActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {

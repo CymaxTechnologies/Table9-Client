@@ -77,6 +77,16 @@
             android:drawablePadding="5dp"
             android:hint="*******"
             android:inputType="textPassword"></EditText>
+        <EditText
+            android:id="@+id/cpassword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/edittext"
+            android:drawableLeft="@drawable/ic_baseline_lock_24"
+            android:drawablePadding="5dp"
+            android:hint="Confirm password"
+            android:inputType="textPassword"></EditText>
 
 
         <Button

@@ -247,7 +247,7 @@ public class CartActivity extends AppCompatActivity {
                          Notification n=new Notification();
                          notification.setUser_id(FirebaseAuth.getInstance().getUid());
                          notification.setTime(new Date().toString());
-                         Toast.makeText(getApplicationContext(),"Please wait till your order is accepted",Toast.LENGTH_LONG).show();
+                         Toast.makeText(getApplicationContext(),"Please wait while resturant accepts your order",Toast.LENGTH_LONG).show();
                          DatabaseReference dbr=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("notifications").push();
                          notification.setId(dbr.getKey());
                          notification.setTable_no(table);

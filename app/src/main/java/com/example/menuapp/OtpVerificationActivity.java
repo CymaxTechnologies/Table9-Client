@@ -24,6 +24,7 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -57,7 +58,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
                 Toast.makeText(OtpVerificationActivity.this,"verification completed",Toast.LENGTH_SHORT).show();
-                verifyCode();
+                verifyCode(phoneAuthCredential);
             }
 
             @Override
@@ -93,124 +94,65 @@ public class OtpVerificationActivity extends AppCompatActivity {
                 }
                 else {
                     PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationCode, otp.getText().toString());
-                    FirebaseAuth.getInstance().signInWithCredential(credential).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
-                        public void onSuccess(AuthResult authResult) {
-                            FirebaseAuth.getInstance().signOut();
-                            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email,password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                @Override
-                                public void onSuccess(AuthResult authResult) {
-                                    UserProfile userProfile=new UserProfile();
-                                    userProfile.setPassword(password);
-                                    userProfile.setEmail(email);
-                                    userProfile.setPhone(phone);
-                                    Toast.makeText(getApplicationContext(),FirebaseAuth.getInstance().getUid(),Toast.LENGTH_LONG).show();
-                                    FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").setValue(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Toast.makeText(OtpVerificationActivity.this,"Validation Succesfull",Toast.LENGTH_SHORT).show();
-                                            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                    UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
-                                                    SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                                    SharedPreferences.Editor editor=sharedPreferences.edit();
-                                                    editor.putString("uname",userProfile.name);
-                                                    editor.putString("uphone",userProfile.phone);
-                                                    editor.putString("uemail",userProfile.email);
-                                                    editor.apply();
-                                                    startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
-                                                    finish();
-                                                }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                }
-                                            });
-
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("profile");
+                                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (!dataSnapshot.exists()) {
+                                            UserProfile userProfile = new UserProfile();
+                                            userProfile.setPhone(phone);
+                                            ref.setValue(userProfile);
                                         }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
+                                    }
 
-                                        }
-                                    });
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                }
-                            });
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(OtpVerificationActivity.this,"Invalid Code",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                            } else {
+                                Toast.makeText(OtpVerificationActivity.this,task.getException().getMessage(),Toast.LENGTH_SHORT).show();
 
+                            }
                         }
                     });
                 }
-
-            }
-        });
-    }
-    void verifyCode()
+    }});}
+    void verifyCode(PhoneAuthCredential phoneAuthCredential)
     {
         Toast.makeText(OtpVerificationActivity.this,"verification completed",Toast.LENGTH_SHORT).show();
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email,password).addOnCompleteListener(OtpVerificationActivity.this, new OnCompleteListener<AuthResult>() {
+        FirebaseAuth.getInstance().signInWithCredential(phoneAuthCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                //checking if success
-                if(task.isSuccessful()){
-                    //display some message here
-                    Toast.makeText(OtpVerificationActivity.this,"Successfully registered",Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(OtpVerificationActivity.this, ResturantActivity.class);
-                    UserProfile userProfile=new UserProfile();
-                    userProfile.setPassword(password);
-                    userProfile.setEmail(email);
-                    userProfile.setPhone(phone);
-                    Toast.makeText(getApplicationContext(),FirebaseAuth.getInstance().getUid(),Toast.LENGTH_LONG).show();
-                    FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").setValue(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
+                if (task.isSuccessful()) {
+                    final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("profile");
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(OtpVerificationActivity.this,"Validation Succesfull",Toast.LENGTH_SHORT).show();
-                            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
-                                    SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                    SharedPreferences.Editor editor=sharedPreferences.edit();
-                                    editor.putString("uname",userProfile.name);
-                                    editor.putString("uphone",userProfile.phone);
-                                    editor.putString("uemail",userProfile.email);
-                                    editor.apply();
-                                    startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
-                                    finish();
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (!dataSnapshot.exists()) {
+                                UserProfile userProfile = new UserProfile();
+                                userProfile.setPhone(phone);
+                                ref.setValue(userProfile);
+                            }
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
+
                         @Override
-                        public void onFailure(@NonNull Exception e) {
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
                         }
                     });
-                    startActivity(intent);
-                    finish();
-                }else{
-                    //display some message here
-                    Toast.makeText(OtpVerificationActivity.this,"Registration Error",Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                } else {
+                    Toast.makeText(OtpVerificationActivity.this,task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+
                 }
-
-
             }
         });
-
     }
 
 }

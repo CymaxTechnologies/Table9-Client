@@ -4,6 +4,15 @@ public class Resturant {
 
     //Location location;
     String latitude;
+    String verified;
+
+    public String getVerified() {
+        return verified;
+    }
+
+    public void setVerified(String verified) {
+        this.verified = verified;
+    }
 
     public String getLatitude() {
         return latitude;
@@ -116,6 +125,7 @@ public class Resturant {
     String address,category,city,contact,data_id,image,login_no,name,password,pincode,state;
     Resturant()
     {
+        verified="";
       address="";
       category="";
       city="";

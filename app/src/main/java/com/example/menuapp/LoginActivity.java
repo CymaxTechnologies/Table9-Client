@@ -27,7 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.concurrent.TimeUnit;
 
 public class LoginActivity extends AppCompatActivity {
-    EditText email,password,phone;
+    EditText email,password,phone,cpassword;
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback;
     String verificationCode;
     ProgressDialog bar;
@@ -45,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         email=(EditText) findViewById(R.id.email);
         password=(EditText)findViewById(R.id.password);
         phone=(EditText)findViewById(R.id.phone);
+        cpassword=(EditText)findViewById(R.id.cpassword);
         Button btn=(Button) findViewById(R.id.login_button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,7 +60,11 @@ public class LoginActivity extends AppCompatActivity {
                 else
                 {
                     p=phone.getText().toString();
-
+                      if(!cpassword.getText().toString().equals(password.getText().toString()))
+                      {
+                          Toast.makeText(getApplicationContext(),"Password does matches",Toast.LENGTH_LONG).show();
+                          return;
+                      }
                        Intent i=new Intent(LoginActivity.this,OtpVerificationActivity.class);
                        i.putExtra("phone",p);
                        i.putExtra("email",email.getText().toString());

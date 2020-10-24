@@ -30,7 +30,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import org.w3c.dom.Text;
 
 public class Login extends AppCompatActivity {
-    EditText email,password;
+    EditText email,password,phone;
     TextView signup,forgot;
     Button btn;
 
@@ -73,61 +73,21 @@ public class Login extends AppCompatActivity {
         bar=new ProgressDialog(Login.this);
         bar.setTitle("T9App");
         bar.setMessage("Please wait......");
-        signup=(TextView)findViewById(R.id.signup);
-        signup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
-                finish();
-            }
-        });
-        email=(EditText)findViewById(R.id.lemail);
-        password=(EditText)findViewById(R.id.lpassword);
+
+
+        phone=(EditText)findViewById(R.id.lphone);
         btn=(Button) findViewById(R.id.btn_login);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(email.getText().toString().isEmpty()||password.getText().toString().isEmpty())
+                if(phone.getText().toString().length()!=10)
                 {
-                    Toast.makeText(getApplicationContext(),"All feilds are necessary",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"Enter your 10 digits mobile number",Toast.LENGTH_LONG).show();
                 }
-                else
-                {
-                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email.getText().toString(),password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful())
-                            {
-                                bar.show();
-                                FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        UserProfile userProfile=dataSnapshot.getValue(UserProfile.class);
-                                        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                        SharedPreferences.Editor editor=sharedPreferences.edit();
-                                        editor.putString("uname",userProfile.name);
-                                        editor.putString("uphone",userProfile.phone);
-                                        editor.putString("uemail",userProfile.email);
-                                        editor.apply();
-                                        startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
-                                        finish();
-                                        bar.dismiss();
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                          bar.dismiss();
-                                    }
-                                });
-
-
-                            }
-                            else
-                            {
-                                Toast.makeText(getApplicationContext(),task.getException().getMessage(),Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
+                else {
+                    Intent i=new Intent(Login.this,OtpVerificationActivity.class);
+                    i.putExtra("phone",phone.getText().toString());
+                    startActivity(i);
                 }
             }
         });
