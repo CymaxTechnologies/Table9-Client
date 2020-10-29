@@ -2,6 +2,7 @@ package com.example.menuapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,16 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MyOrdersAdapter extends RecyclerView.Adapter<MyOrdersAdapter.holder> {
     ArrayList<Order> list;
     Context c;
+    MediaPlayer music;
        MyOrdersAdapter(ArrayList<Order> list, Context c)
        {
+           music=MediaPlayer.create(c,R.raw.abc);
            this.c=c;
            this.list=list;
        }
@@ -43,31 +47,55 @@ public class MyOrdersAdapter extends RecyclerView.Adapter<MyOrdersAdapter.holder
                holder.recyclerView.setAdapter(new OrderItemSingleOrderAdapter(order.getCuisines(),order.getCount()));
                if(order.getStatus().equals("waiting"))
                {
+
+
+                 if(!music.isPlaying())
+                 {
+                  music.start();
+                 }
+
                    holder.img.setImageResource(R.drawable.waiting_icon);
+                //   Toast.makeText(c,"Your order has been placed  ",Toast.LENGTH_LONG).show();
 
 
                }
                else if(order.getStatus().equals("Accepted"))
                {
-                 
+                   if(!music.isPlaying())
+                   {
+                       music.start();
+                   }
                    holder.img.setImageResource(R.drawable.accepted_icon);
-                   Toast.makeText(c,"Your order has been accepted ",Toast.LENGTH_LONG).show();
+//                   Toast.makeText(c,"Your order has been Accepted ",Toast.LENGTH_LONG).show();
 
                }
                else if(order.getStatus().equals("Cooking"))
                {
+                   if(!music.isPlaying())
+                   {
+                       music.start();
+                   }
                    holder.img.setImageResource(R.drawable.cooking_50);
 
                }
                else if(order.getStatus().equals("Served"))
                {
+                   if(!music.isPlaying())
+                   {
+                       music.start();
+                   }
+                  // Toast.makeText(c,"Your order has been Served ",Toast.LENGTH_LONG).show();
                    holder.img.setImageResource(R.drawable.finish_icon);
 
                }
                else if(order.getStatus().equals("Rejeceted"))
                {
+                   if(!music.isPlaying())
+                   {
+                       music.start();
+                   }
                    holder.img.setImageResource(R.drawable.rejected_icon);
-                   Toast.makeText(c,"Your order has been accepted ",Toast.LENGTH_LONG).show();
+ //                  Toast.makeText(c,"Your order has been Rejected ",Toast.LENGTH_LONG).show();
 
                }
            holder.cardView.setOnClickListener(new View.OnClickListener() {

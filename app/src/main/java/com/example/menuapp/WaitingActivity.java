@@ -1,10 +1,14 @@
 package com.example.menuapp;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -17,8 +21,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 
@@ -26,20 +33,24 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class WaitingActivity extends AppCompatActivity {
     CardView ask,repord,cuttlery;
     Button pay,order;
     ImageButton cuti,waiti,repi;
-    String table;
-    String resturant_id;
-    String resturant_name;
+    String table="";
+    String city;
+    String resturant_id="";
+    String resturant_name="";
     DatabaseReference ref;
     NotiHelper notiHelper;
     String user_name;
     String user_email;
     String user_phone_no;
+    RecyclerView recyclerView;
+    ArrayList<Order> list=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +71,29 @@ public class WaitingActivity extends AppCompatActivity {
         waiti=(ImageButton)findViewById(R.id.waiterimg);
         repi=(ImageButton)findViewById(R.id.reportimg);
         pay=(Button)findViewById(R.id.pay_bill);
+        recyclerView=(RecyclerView) findViewById(R.id.active_orders);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("my_orders").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                list.clear();
+                for(DataSnapshot x:dataSnapshot.getChildren())
+                {
+                    for(DataSnapshot d:x.getChildren())
+                    {
+                        list.add(d.getValue(Order.class));
+                    }
+                }
+                recyclerView.setAdapter(new MyOrdersAdapter(list,getApplicationContext()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         TextView titler=(TextView) findViewById(R.id.resturant_title);
         titler.setText(resturant_name);
         getSupportActionBar().hide();
@@ -100,9 +134,18 @@ public class WaitingActivity extends AppCompatActivity {
                 }
                 dr=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("notification").child(n.getId());
                 dr.setValue(n);
-                getSharedPreferences("global",MODE_PRIVATE).edit().clear().commit();
+
+
                 FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).removeValue();
-            startActivity(new Intent(getApplicationContext(),ArrivingBillActivity.class));
+                Intent i=new Intent(getApplicationContext(),ArrivingBillActivity.class);
+                i.putExtra("resturant_id","8146481114");
+                SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                city=PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("city","patiala");
+                i.putExtra("city",city);
+                getSharedPreferences("global",MODE_PRIVATE).edit().clear().commit();
+
+
+                startActivity(i);
                finish();
 
             }

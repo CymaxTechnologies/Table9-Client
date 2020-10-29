@@ -22,6 +22,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,6 +46,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.example.menuapp.DataBase.RoomDatabase;
+import com.example.menuapp.Others.AppExecuter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -63,11 +66,13 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ResturantActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+    private final String DEFAULT_CITY="patiala";
     ArrayList<Resturant> data = new ArrayList<>();
     ProgressDialog progressDialog;
     RecyclerView recyclerView;
     ResturantAdapter adapter;
     SearchView searchView;
+    String cityx;
     ArrayList<Resturant> alldata = new ArrayList<>();
     String city = "";
     private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
@@ -76,6 +81,23 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_resturant);
+        final SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+         cityx=sharedPreferences.getString("city","Patiala");
+        adapter=new ResturantAdapter();
+        alldata.addAll(data);
+        recyclerView=(RecyclerView)findViewById(R.id.resturant_list);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(ResturantActivity.this));
+        recyclerView.setAdapter(adapter);
+        AppExecuter.getInstance().getDiskio().execute(new Runnable() {
+            @Override
+            public void run() {
+                data=(ArrayList<Resturant>)RoomDatabase.getInstance(ResturantActivity.this).resturantDAO().getAll();
+                adapter.notifyDataSetChanged();
+                alldata.addAll(data);
+
+            }
+        });
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
@@ -121,30 +143,10 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
         progressDialog.setTitle("T9 App");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
-        progressDialog.show();
-        FirebaseDatabase.getInstance().getReference().child("resturants").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                data.clear();
-                for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    Resturant r=d.getValue(Resturant.class);
-                    if(r.verified.equals("no"))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        data.add(r);
-                    }
-                  //   Toast.makeText(getApplicationContext(), data.get(0).getName(), Toast.LENGTH_SHORT).show();
-                }
-                    adapter=new ResturantAdapter();
-                    alldata.addAll(data);
-                    recyclerView=(RecyclerView)findViewById(R.id.resturant_list);
-                    recyclerView.setHasFixedSize(true);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(ResturantActivity.this));
-                    recyclerView.setAdapter(adapter);
-                    progressDialog.dismiss();
+      //  progressDialog.show();
+
+
+                  //  progressDialog.dismiss();
                 final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
                if (ActivityCompat.checkSelfPermission(ResturantActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ResturantActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -160,27 +162,48 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                         public void onLocationChanged(@NonNull Location location) {
                             Geocoder geocoder=new Geocoder(ResturantActivity.this,Locale.getDefault());
                             try {
-                                List<Address> addresses=geocoder.getFromLocation(location.getLatitude(),location.getLongitude(),1);
+                                final List<Address> addresses=geocoder.getFromLocation(location.getLatitude(),location.getLongitude(),1);
                                 city=addresses.get(0).getLocality();
-                                ArrayList<Resturant> temp=new ArrayList<>();
-                                for(Resturant r:data)
-                                {
-                                    if(r.city.toLowerCase().equals(city.toLowerCase())||city=="")
-                                    {
-                                        temp.add(r);
+                                final ArrayList<Resturant> temp=new ArrayList<>();
+                                Toast.makeText(getApplicationContext(), city, Toast.LENGTH_SHORT).show();
+                                locationManager.removeUpdates(this);
+                            FirebaseDatabase.getInstance().getReference().child("resturants").child(city.toLowerCase()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                                        Resturant r=d.getValue(Resturant.class);
+                                        if(r.verified.equals("no"))
+                                        {
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            temp.add(r);
+                                        }
 
                                     }
+                                    data=temp;
+                                    SharedPreferences sharedPreferences1=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                    sharedPreferences.edit().putString("city",city.toLowerCase());
+                                    sharedPreferences.edit().apply();
+                                    adapter.notifyDataSetChanged();
+                                    AppExecuter.getInstance().getDiskio().execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            RoomDatabase.getInstance(getApplicationContext()).resturantDAO().deleAll();
+                                            for (Resturant r:data)
+                                            {
+                                                RoomDatabase.getInstance(getApplicationContext()).resturantDAO().insert(r);
+                                            }
+                                        }
+                                    });
                                 }
-                                data=temp;
-                            /*    adapter=new ResturantAdapter();
-                                alldata.addAll(data);
-                                recyclerView=(RecyclerView)findViewById(R.id.resturant_list);
-                                recyclerView.setHasFixedSize(true);
-                                recyclerView.setLayoutManager(new LinearLayoutManager(ResturantActivity.this));
-                                recyclerView.setAdapter(adapter);
-                                locationManager.removeUpdates(this);
-                                progressDialog.dismiss();
-                                Toast.makeText(getApplicationContext(),city,Toast.LENGTH_LONG).show();*/
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -192,26 +215,56 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
 
                 }
                 else
+
                 {
-                    adapter=new ResturantAdapter();
-                    alldata.addAll(data);
-                    recyclerView=(RecyclerView)findViewById(R.id.resturant_list);
-                    recyclerView.setHasFixedSize(true);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(ResturantActivity.this));
-                    recyclerView.setAdapter(adapter);
-                    progressDialog.dismiss();
+
+                    final ArrayList<Resturant> temp=new ArrayList<>();
+
+                    FirebaseDatabase.getInstance().getReference().child("resturants").child(DEFAULT_CITY).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot d : dataSnapshot.getChildren()) {
+                                Resturant r=d.getValue(Resturant.class);
+                                if(r.verified.equals("no"))
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    temp.add(r);
+                                }
+                                //   Toast.makeText(getApplicationContext(), data.get(0).getName(), Toast.LENGTH_SHORT).show();
+                            }
+                            data=temp;
+                            adapter.notifyDataSetChanged();
+                            SharedPreferences sharedPreferences1=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                            sharedPreferences.edit().putString("city","patiala".toLowerCase());
+                            sharedPreferences.edit().apply();
+                            AppExecuter.getInstance().getDiskio().execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    RoomDatabase.getInstance(getApplicationContext()).resturantDAO().deleAll();
+                                    for (Resturant r:data)
+                                    {
+                                        RoomDatabase.getInstance(getApplicationContext()).resturantDAO().insert(r);
+                                    }
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });                  //  progressDialog.dismiss();
                 }
 
 
 
 
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                     progressDialog.dismiss();
-            }
-        });
+
+
     }
 
     @Override
@@ -276,7 +329,12 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                         editor.putString("resturant_id",resturant.data_id);
                         editor.putString("name",resturant.name);
                         editor.putString("table","waiting");
+                        editor.putString("city",resturant.city.toLowerCase());
+
                         editor.commit();
+                        SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        sharedPreferences.edit().putString("city",resturant.city.toLowerCase());
+                        sharedPreferences.edit().apply();
                         Toast.makeText(getApplicationContext(),city,Toast.LENGTH_LONG).show();
                         i.putExtra("resturant_id",resturant.data_id);
                         i.putExtra("table","");

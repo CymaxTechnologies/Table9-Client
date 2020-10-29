@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -147,6 +148,23 @@ public class CartActivity extends AppCompatActivity {
                         //   startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
 
                         //return;
+                        List<Order> pendings=new ArrayList<>();
+                       FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("pending_orders").child(resturant_id).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(DataSnapshot d:dataSnapshot.getChildren())
+                                {
+                                    Order o=dataSnapshot.getValue(Order.class);
+
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
 
                     }
                 }
@@ -171,6 +189,29 @@ public class CartActivity extends AppCompatActivity {
 
                 if(table.equals("waiting"))
                 {
+                    if(cart.size()==0)
+                    {
+                        Toast.makeText(getApplicationContext(),"0 orders in cart",Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    Order order = new Order();
+                    order.setResturant_id(resturant_id);
+                    order.setTable(table);
+                    HashMap<Cuisine, Integer> cu = new HashMap<>();
+                    for (int i = 0; i < cart.size(); i++) {
+                        cu.put(cart.get(i), count.get(i));
+                    }
+
+                    String timeStamp = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
+                    order.setResturant_name(resturant_name);
+                    order.setCheck_in_time(timeStamp);
+                    order.setStatus("waiting");
+                    order.setCustomer_id(FirebaseAuth.getInstance().getUid());
+                    order.setUser_id(FirebaseAuth.getInstance().getUid());
+                    order.setCuisines(cart);
+                    order.setValue(Integer.toString(total));
+                    order.setCount(count);
+                     DatabaseReference dbr=        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("outside").child(FirebaseAuth.getInstance().getUid()).push();
 
                     Toast.makeText(getApplicationContext(),"Please wait you are not assigned a table",Toast.LENGTH_LONG).show();
                     DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").child(FirebaseAuth.getInstance().getUid());
@@ -200,13 +241,25 @@ public class CartActivity extends AppCompatActivity {
 
                         }
                     });
-
-                    return ;
+                    dbr.setValue(order);
+                    Intent i=new Intent(getApplicationContext(),WaitingActivity.class);
+                    i.putExtra("table",table);
+                    i.putExtra("name",resturant_name);
+                    i.putExtra("resturant_id",resturant_id);
+                    startActivity(i);
+                    finish();
+                   return ;
                 }
                 else if(table.equals("not_available"))
                 {
                     Toast.makeText(getApplicationContext(),"No table Available",Toast.LENGTH_LONG).show();
                    return;
+                }
+                else  if(cart.size()==0)
+                {
+                    Toast.makeText(getApplicationContext(),"Please add Items into cart",Toast.LENGTH_LONG).show();
+                    return;
+
                 }
 
                 Order order = new Order();
@@ -252,7 +305,7 @@ public class CartActivity extends AppCompatActivity {
                          notification.setId(dbr.getKey());
                          notification.setTable_no(table);
                         // Toast.makeText(getApplicationContext(),"Getting "+table,Toast.LENGTH_LONG).show();
-                         notification.setMessage("New Order by "+user_name+"\n"+user_phone_no);
+                         notification.setMessage("\nNew Order at "+table+" by "+user_name+"\n"+user_phone_no);
                          dbr.setValue(notification);
                          FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).removeValue();
 

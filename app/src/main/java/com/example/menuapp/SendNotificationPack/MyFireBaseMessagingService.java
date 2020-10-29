@@ -25,6 +25,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -39,8 +40,8 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         notificationManager.createNotificationChannel(notificationChannel);
             super.onMessageReceived(remoteMessage);
             title=remoteMessage.getData().get("Title");
-            message=remoteMessage.getData().get("Body");
-//        Toast.makeText(getApplicationContext(),"Message",Toast.LENGTH_LONG).show();
+            message=remoteMessage.getData().get("X");
+
 
 
         //Setting up Notification channels for android O and above
@@ -49,7 +50,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.cooking)  //a resource for your custom small icon
+                .setSmallIcon(R.drawable.location_24_orange)  //a resource for your custom small icon
                 .setContentTitle(remoteMessage.getData().get("title")) //the "title" value you sent in your notification
                 .setContentText(remoteMessage.getData().get("body")) //ditto
                 .setAutoCancel(true)  //dismisses the notification on click

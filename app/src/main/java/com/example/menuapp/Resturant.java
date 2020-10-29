@@ -1,10 +1,47 @@
 package com.example.menuapp;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+import com.google.firebase.database.annotations.NotNull;
+
+@Entity
 public class Resturant {
 
-    //Location location;
-    String latitude;
-    String verified;
+    //Location location
+    // ;
+    @PrimaryKey(autoGenerate = true)
+
+   public long p_id;
+   public float rating;
+   public int count;
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public long getP_id() {
+        return p_id;
+    }
+
+    public void setP_id(long p_id) {
+        this.p_id = p_id;
+    }
+
+    public   String latitude;
+  public   String verified;
 
     public String getVerified() {
         return verified;
@@ -122,9 +159,13 @@ public class Resturant {
         this.state = state;
     }
 
-    String address,category,city,contact,data_id,image,login_no,name,password,pincode,state;
-    Resturant()
+    public String address,category,city,data_id,image,login_no,name,password,pincode,state;
+
+    public String contact;
+    public Resturant()
     {
+        count=0;
+        rating=0;
         verified="";
       address="";
       category="";

@@ -10,228 +10,256 @@
     android:padding="0dp"
     >
 
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:padding="15dp">
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-
-                android:gravity="left"
-                android:layout_gravity="left"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/resturant_title"
-                    android:layout_width="372dp"
-                    android:layout_height="wrap_content"
-                    android:text="Zafran Chinese Den"
-                    android:textSize="30sp"
-
-                    android:textStyle="bold">
-
-                </TextView>
-
-                <TextView
-                    android:id="@+id/cart_item_price"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_baseline_shopping_cart_black"
-                    android:gravity="left"
-                    android:padding="15px"
-                    android:text="Please wait.."
-                    android:textSize="18sp">
-
-                </TextView>
-
-
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_gravity="right"
-                android:layout_weight="1"
-                android:gravity="right"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"/>
-
-
-
-
-        </LinearLayout>
-
-
-
-
-    </androidx.cardview.widget.CardView>
-
- <LinearLayout
-     android:layout_width="match_parent"
-     android:layout_height="wrap_content"
-     android:gravity="center"
-     android:orientation="vertical">
-     <ImageButton
-         android:id="@+id/pic"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:background="@color/colorPrimary"
-         android:src="@drawable/logo_white_large">
-
-     </ImageButton>
-     <TextView
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:textSize="20dp"
-         android:textStyle="bold"
-         android:text="Please wait while the resturant Accepts your order"
-         android:textColor="@color/colorPrimary">
-
-     </TextView>
- </LinearLayout>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
     <LinearLayout
-        android:weightSum="2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <androidx.cardview.widget.CardView
 
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+
+            android:padding="15dp">
             <LinearLayout
-                android:gravity="center"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
+                <LinearLayout
+
+                    android:gravity="left"
+                    android:layout_gravity="left"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/resturant_title"
+                        android:layout_width="372dp"
+                        android:layout_height="wrap_content"
+                        android:text="Zafran Chinese Den"
+                        android:textSize="30sp"
+
+                        android:textStyle="bold">
+
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/cart_item_price"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/ic_baseline_shopping_cart_black"
+                        android:gravity="left"
+                        android:padding="15px"
+                        android:text="Please wait.."
+                        android:textSize="18sp">
+
+                    </TextView>
+
+
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_gravity="right"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+
+
 
 
             </LinearLayout>
+
+
+
+
         </androidx.cardview.widget.CardView>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageButton
+                android:id="@+id/pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:src="@drawable/logo_white_large">
+
+            </ImageButton>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:text="Please wait while the resturant Accepts your order"
+                android:textColor="@color/colorPrimary">
+
+            </TextView>
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <androidx.cardview.widget.CardView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3"
+
+            android:layout_margin="10dp">
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/ask_cutlery"
+                android:padding="10dp">
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <ImageButton
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:id="@+id/cutimage"
+                        android:src="@drawable/cuttlery">
+
+                    </ImageButton>
+                    <TextView
+                        android:layout_margin="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ask Cutlery">
+
+                    </TextView>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:id="@+id/call_waiter">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <ImageButton
+                        android:id="@+id/waiterimg"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/cuttlery">
+
+                    </ImageButton>
+                    <TextView
+                        android:layout_margin="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Call Waiter">
+
+                    </TextView>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/report_problem"
+                android:padding="10dp">
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <ImageButton
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:id="@+id/reportimg"
+                        android:src="@drawable/cuttlery">
+
+                    </ImageButton>
+                    <TextView
+                        android:layout_margin="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Report ">
+
+                    </TextView>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Click here to Order more"
+                android:drawableLeft="@drawable/logo_white_large"
+                android:drawablePadding="5dp"
+                android:layout_margin="5dp"
+                android:id="@+id/place_more"
+
+                android:textColor="@android:color/white"
+                android:background="@color/colorPrimary"></Button>
+            <Button
+                android:drawableLeft="@drawable/next_32"
+                android:drawablePadding="5dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="It was delicious ,Pay your bill"
+                android:layout_margin="5dp"
+                android:id="@+id/pay_bill"
+                android:textColor="@android:color/white"
+                android:background="@color/colorPrimary"></Button>
+        </LinearLayout>
+
+        <Button
+
+            android:drawablePadding="5dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Active Orders"
+            android:layout_margin="5dp"
+
+            android:textColor="@android:color/white"
+            android:background="@color/colorPrimary"></Button>
+        <androidx.recyclerview.widget.RecyclerView
+            android:background="@drawable/background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/active_orders"></androidx.recyclerview.widget.RecyclerView>
 
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="3"
-
-        android:layout_margin="10dp">
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:id="@+id/ask_cutlery"
-            android:padding="10dp">
-            <LinearLayout
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <ImageButton
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:id="@+id/cutimage"
-                    android:src="@drawable/cuttlery">
-
-                </ImageButton>
-                <TextView
-                    android:layout_margin="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ask Cutlery">
-
-                </TextView>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:id="@+id/call_waiter">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
-                <ImageButton
-                    android:id="@+id/waiterimg"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/cuttlery">
-
-                </ImageButton>
-                <TextView
-                    android:layout_margin="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Call Waiter">
-
-                </TextView>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:id="@+id/report_problem"
-            android:padding="10dp">
-            <LinearLayout
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <ImageButton
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:id="@+id/reportimg"
-                    android:src="@drawable/cuttlery">
-
-                </ImageButton>
-                <TextView
-                    android:layout_margin="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Report ">
-
-                </TextView>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-    </LinearLayout>
- <LinearLayout
-     android:layout_width="match_parent"
-     android:layout_height="wrap_content"
-     android:orientation="vertical">
-     <Button
-         android:layout_weight="1"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:text="Click here to Order more"
-         android:drawableLeft="@drawable/logo_white_large"
-         android:drawablePadding="5dp"
-         android:layout_margin="5dp"
-         android:id="@+id/place_more"
-
-         android:textColor="@android:color/white"
-         android:background="@color/colorPrimary"></Button>
-     <Button
-         android:drawableLeft="@drawable/next_32"
-         android:drawablePadding="5dp"
-         android:layout_weight="1"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:text="It was delicious ,Pay your bill"
-         android:layout_margin="5dp"
-         android:id="@+id/pay_bill"
-         android:textColor="@android:color/white"
-         android:background="@color/colorPrimary"></Button>
- </LinearLayout>
+</ScrollView>
 </LinearLayout>

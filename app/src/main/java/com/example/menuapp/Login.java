@@ -40,14 +40,14 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login2);
         bar=new ProgressDialog(Login.this);
-        bar.setCancelable(false);
+        bar.setCancelable(true);
         bar.setTitle("T9 App");
         bar.setMessage("Please wait....");
         getSupportActionBar().hide();
 
         if(FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
-           bar.show();
+          bar.show();
             FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -58,21 +58,20 @@ public class Login extends AppCompatActivity {
                     editor.putString("uphone",userProfile.phone);
                     editor.putString("uemail",userProfile.email);
                     editor.apply();
-                    startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
-                    finish();
                     bar.dismiss();
+                    startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                   bar.dismiss();
+                    finish();
+
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                      bar.dismiss();
+                    //  bar.dismiss();
                 }
             });
 
         }
-        bar=new ProgressDialog(Login.this);
-        bar.setTitle("T9App");
-        bar.setMessage("Please wait......");
 
 
         phone=(EditText)findViewById(R.id.lphone);

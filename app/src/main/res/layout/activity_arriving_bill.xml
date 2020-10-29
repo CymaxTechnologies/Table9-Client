@@ -34,7 +34,17 @@
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textStyle="bold"></TextView>
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
 
+        android:foregroundGravity="center"
+
+        android:layout_marginTop="60dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
     <Button
         android:id="@+id/btnlogout"
         android:layout_width="wrap_content"
@@ -42,7 +52,7 @@
         android:layout_margin="10dp"
         android:background="@drawable/edittext"
         android:gravity="center"
-        android:text="Logout"
+        android:text="Submit"
         android:textColor="@color/colorPrimary"
         android:textSize="18sp"
         android:textStyle="bold"></Button>

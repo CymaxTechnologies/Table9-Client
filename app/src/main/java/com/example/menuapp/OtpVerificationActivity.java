@@ -138,6 +138,16 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                 UserProfile userProfile = new UserProfile();
                                 userProfile.setPhone(phone);
                                 ref.setValue(userProfile);
+                                SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                SharedPreferences.Editor editor=sharedPreferences.edit();
+                                editor.putString("uname",userProfile.name);
+                                editor.putString("uphone",userProfile.phone);
+                                editor.putString("uemail",userProfile.email);
+                                editor.apply();
+                                startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                            }
+                            else {
+                                startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
                             }
                         }
 
@@ -146,7 +156,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
                         }
                     });
-                    startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+
                 } else {
                     Toast.makeText(OtpVerificationActivity.this,task.getException().getMessage(),Toast.LENGTH_SHORT).show();
 
