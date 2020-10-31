@@ -1,11 +1,14 @@
 package com.example.menuapp;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RatingBar;
@@ -36,9 +39,11 @@ public class ArrivingBillActivity extends AppCompatActivity {
         ratingBar.setNumStars(5);
         getSupportActionBar().hide();
         Button logout=(Button)findViewById(R.id.btnlogout);
+
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final AlertDialog alertDialog=showCustomDialog();
                 final float  rat=ratingBar.getRating();
                 final int[] c = {0};
                 final float[] r = {0};
@@ -56,14 +61,23 @@ public class ArrivingBillActivity extends AppCompatActivity {
                                 FirebaseDatabase.getInstance().getReference().child("resturants").child(city).child(resturant_id).child("count").setValue(c[0]);
                                 FirebaseDatabase.getInstance().getReference().child("resturants").child(city).child(resturant_id).child("rating").setValue(r[0]);
 
-
+                                try {
+                                    Thread.sleep(3000);
+                                    alertDialog.dismiss();
+                                    finish();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }finally {
+                                    alertDialog.dismiss();
+                                    finish();
+                                }
 
 
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                  alertDialog.dismiss();
                             }
                         });
 
@@ -87,4 +101,24 @@ public class ArrivingBillActivity extends AppCompatActivity {
         super.onBackPressed();
 
     }
+    private AlertDialog showCustomDialog() {
+        //before inflating the custom alert dialog layout, we will get the current activity viewgroup
+        ViewGroup viewGroup = findViewById(android.R.id.content);
+
+        //then we will inflate the custom alert dialog xml that we created
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.thankyoudialogue, viewGroup, false);
+
+
+        //Now we need an AlertDialog.Builder object
+        AlertDialog.Builder builder = new AlertDialog.Builder(ArrivingBillActivity.this);
+
+        //setting the view of the builder to our custom view that we already inflated
+        builder.setView(dialogView);
+
+        //finally creating the alert dialog and displaying it
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        return alertDialog;
+    }
+
 }

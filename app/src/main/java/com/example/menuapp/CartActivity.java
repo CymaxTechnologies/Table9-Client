@@ -192,6 +192,9 @@ public class CartActivity extends AppCompatActivity {
                     if(cart.size()==0)
                     {
                         Toast.makeText(getApplicationContext(),"0 orders in cart",Toast.LENGTH_LONG).show();
+                        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+
+                        finish();
                         return;
                     }
                     Order order = new Order();
@@ -212,7 +215,7 @@ public class CartActivity extends AppCompatActivity {
                     order.setValue(Integer.toString(total));
                     order.setCount(count);
                      DatabaseReference dbr=        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("outside").child(FirebaseAuth.getInstance().getUid()).push();
-
+                     order.setOrder_id(dbr.getKey());
                     Toast.makeText(getApplicationContext(),"Please wait you are not assigned a table",Toast.LENGTH_LONG).show();
                     DatabaseReference drf=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("new_arrivals").child(FirebaseAuth.getInstance().getUid());
                     String s=user_name+" is waiting for table \n"+user_phone_no+"\n"+user_email;
@@ -246,6 +249,7 @@ public class CartActivity extends AppCompatActivity {
                     i.putExtra("table",table);
                     i.putExtra("name",resturant_name);
                     i.putExtra("resturant_id",resturant_id);
+                    i.putExtra("order_id",order.getOrder_id());
                     startActivity(i);
                     finish();
                    return ;
@@ -258,11 +262,14 @@ public class CartActivity extends AppCompatActivity {
                 else  if(cart.size()==0)
                 {
                     Toast.makeText(getApplicationContext(),"Please add Items into cart",Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                    finish();
+
                     return;
 
                 }
 
-                Order order = new Order();
+                final Order order = new Order();
                 order.setResturant_id(resturant_id);
                 order.setTable(table);
                 HashMap<Cuisine, Integer> cu = new HashMap<>();
@@ -297,6 +304,8 @@ public class CartActivity extends AppCompatActivity {
                          i.putExtra("table",table);
                          i.putExtra("name",resturant_name);
                          i.putExtra("resturant_id",resturant_id);
+                         i.putExtra("order_id",order.getOrder_id());
+
                          Notification n=new Notification();
                          notification.setUser_id(FirebaseAuth.getInstance().getUid());
                          notification.setTime(new Date().toString());

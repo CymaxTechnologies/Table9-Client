@@ -5,11 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +44,9 @@ public class OtpVerificationActivity extends AppCompatActivity {
     EditText otp;
     TextView otpno;
     Button button;
+    TextView time;
+    ProgressBar progressBar;
+    TextView resendOTP;
 
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback;
     @Override
@@ -49,10 +56,46 @@ public class OtpVerificationActivity extends AppCompatActivity {
         otp=(EditText)findViewById(R.id.otp);
         otpno=(TextView)findViewById(R.id.otpno);
         button=(Button)findViewById(R.id.otpbutton);
+        button.setEnabled(false);
+        button.setBackgroundColor(Color.GRAY);
+        time=(TextView)findViewById(R.id.time);
+        progressBar=(ProgressBar)findViewById(R.id.progressbar) ;
+        resendOTP=(TextView)findViewById(R.id.resendotp) ;
+        resendOTP.setEnabled(false);
+        progressBar.setProgress(0);
 
         email=(String)getIntent().getStringExtra("email");
         password=(String)getIntent().getStringExtra("password");
         phone=(String)getIntent().getStringExtra("phone");
+        getSupportActionBar().hide();
+       Thread my=new myTThread();
+       my.start();
+      otp.addTextChangedListener(new TextWatcher() {
+          @Override
+          public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+          }
+
+          @Override
+          public void onTextChanged(CharSequence s, int start, int before, int count) {
+                     if(s.toString().length()==6)
+                     {
+                         button.setEnabled(true);
+                         button.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                     }
+                     else
+                     {
+                         button.setEnabled(false);
+                         button.setBackgroundColor(Color.GRAY);
+                     }
+          }
+
+          @Override
+          public void afterTextChanged(Editable s) {
+
+          }
+      });
+
         mCallback = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             @Override
@@ -82,6 +125,13 @@ public class OtpVerificationActivity extends AppCompatActivity {
                 OtpVerificationActivity.this,        // Activity (for callback binding)
                 mCallback);
         otpno.setText("Otp send to +91 "+phone);
+        resendOTP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resendOTP.setEnabled(false);
+                new myTThread().start();
+            }
+        });
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -163,6 +213,62 @@ public class OtpVerificationActivity extends AppCompatActivity {
                 }
             }
         });
+        otp.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.toString().length()==6)
+                {
+                    button.setEnabled(true);
+                    button.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                }
+                else
+                {
+                    button.setEnabled(false);
+                    button.setBackgroundColor(Color.GRAY);
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
+class myTThread extends Thread
+{
+
+    @Override
+    public void run() {
+        for(int i=0;i<60;i++)
+        {
+            try {
+                Thread.sleep(i*100);
+                final int finalI = i;
+                OtpVerificationActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        time.setText("You  can click resend after "+(60- finalI)+" seconds");
+                    }
+                });
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        OtpVerificationActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                time.setText("You can resend otp now");
+            }
+        });
+        resendOTP.setEnabled(true);
+    }
+}
 
 }

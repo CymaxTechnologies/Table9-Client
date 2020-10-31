@@ -4,6 +4,15 @@ import java.io.Serializable;
 
 public class Cuisine implements Serializable {
     String id;
+    String veg_nonveg="veg";
+
+    public String getVeg_nonveg() {
+        return veg_nonveg;
+    }
+
+    public void setVeg_nonveg(String veg_nonveg) {
+        this.veg_nonveg = veg_nonveg;
+    }
 
     public String getId() {
         return id;

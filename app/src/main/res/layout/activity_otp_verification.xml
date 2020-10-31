@@ -6,47 +6,134 @@
     android:layout_height="match_parent"
     tools:context=".OtpVerificationActivity"
     android:orientation="vertical"
-    android:gravity="center"
+
     >
-   <LinearLayout
-       android:background="@drawable/background"
-       android:padding="20dp"
-       android:gravity="left"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:orientation="vertical">
-       <TextView
-           android:layout_marginBottom="10dp"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:textSize="20dp"
-           android:textStyle="bold"
-           android:text="Enter varification no"
-           ></TextView>
-       <TextView
-           android:layout_marginBottom="10dp"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:text="Phoen no"
-           android:id="@+id/otpno"></TextView>
-       <EditText
-           android:layout_margin="10dp"
-           android:layout_width="150dp"
-           android:layout_height="50dp"
-           android:id="@+id/otp"
-           android:background="@android:color/white"
-           ></EditText>
-       <Button
-           android:layout_margin="10dp"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:id="@+id/otpbutton"
-           android:background="@color/colorPrimary"
-           android:textColor="@android:color/white"
-           android:text="submit">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/gray"
+        android:orientation="horizontal">
+   <ImageView
+       android:layout_width="50dp"
+       android:id="@+id/otp_back_image"
+       android:layout_height="50dp"
+       android:layout_gravity="bottom"
+       android:src="@drawable/arrowleftgray24"></ImageView>
+    </LinearLayout>
+    <LinearLayout
 
-       </Button>
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:padding="10dp"
+        android:weightSum="4"
+        android:background="@color/gray"
+        android:orientation="horizontal">
+       <LinearLayout
+           android:layout_weight="3"
+           android:layout_width="wrap_content"
+           android:orientation="vertical"
+           android:layout_marginLeft="10dp"
+           android:layout_height="wrap_content">
+           <TextView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:textSize="20dp"
+               android:textStyle="bold"
+               android:text="VERIFY DETAILS">
+
+           </TextView>
+           <TextView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:id="@+id/otpno"
+               android:text="OTP sent to +91 "
+               android:textStyle="bold"
+              >
+
+           </TextView>
 
 
-   </LinearLayout>
+       </LinearLayout>
+        <ImageView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:foregroundGravity="right"
+            android:src="@drawable/mobile_otp"
+            ></ImageView>
+
+    </LinearLayout>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:padding="30dp"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_margin="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="ENTER OTP"
+                android:textSize="10dp"
+                android:layout_height="wrap_content">
+
+            </TextView>
+            <EditText
+                android:id="@+id/otp"
+                android:background="@drawable/borderededittext"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:textColorLink="#F3D9B3">
+
+            </EditText>
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:id="@+id/progressbar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:progress="50"
+                ></ProgressBar>
+            <LinearLayout
+                android:layout_gravity="right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10dp"
+                    android:id="@+id/time"
+                    android:text="time">
+
+                </TextView>
+                <TextView
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:id="@+id/resendotp"
+                    android:text="RESEND OTP">
+
+                </TextView>
+
+            </LinearLayout>
+
+          <Button
+              android:id="@+id/otpbutton"
+              android:layout_marginTop="20dp"
+              android:layout_width="match_parent"
+              android:layout_height="50dp"
+              android:text="Submit"
+              android:background="@color/colorPrimary"
+              android:textColor="@android:color/white">
+
+          </Button>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+
 </LinearLayout>

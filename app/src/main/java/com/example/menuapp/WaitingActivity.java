@@ -7,14 +7,17 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Entity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,12 +38,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class WaitingActivity extends AppCompatActivity {
     CardView ask,repord,cuttlery;
     Button pay,order;
     ImageButton cuti,waiti,repi;
-    String table="";
+    String table="waiting";
     String city;
     String resturant_id="";
     String resturant_name="";
@@ -49,7 +53,11 @@ public class WaitingActivity extends AppCompatActivity {
     String user_name;
     String user_email;
     String user_phone_no;
+    String order_id="";
+    ImageView order_status_image,table_no_image;
+    TextView order_status_textview,table_no_textview;
     RecyclerView recyclerView;
+    OrderItemSingleOrderAdapter adapter;
     ArrayList<Order> list=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +67,7 @@ public class WaitingActivity extends AppCompatActivity {
         user_name= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uname","123");
         user_phone_no= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uphone","123");
         user_email= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uemail","123");
-
+        order_id=getIntent().getStringExtra("order_id");
         table=(String)getIntent().getStringExtra("table");
         resturant_id=(String)getIntent().getStringExtra("resturant_id");
         resturant_name=(String)getIntent().getStringExtra("name");
@@ -71,28 +79,11 @@ public class WaitingActivity extends AppCompatActivity {
         waiti=(ImageButton)findViewById(R.id.waiterimg);
         repi=(ImageButton)findViewById(R.id.reportimg);
         pay=(Button)findViewById(R.id.pay_bill);
-        recyclerView=(RecyclerView) findViewById(R.id.active_orders);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("my_orders").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                list.clear();
-                for(DataSnapshot x:dataSnapshot.getChildren())
-                {
-                    for(DataSnapshot d:x.getChildren())
-                    {
-                        list.add(d.getValue(Order.class));
-                    }
-                }
-                recyclerView.setAdapter(new MyOrdersAdapter(list,getApplicationContext()));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        table_no_image=(ImageView)findViewById(R.id.img_table_no) ;
+        table_no_textview=(TextView) findViewById(R.id.txt_table_no);
+        order_status_image=(ImageView)findViewById(R.id.img_order_status);
+        order_status_textview=(TextView)findViewById(R.id.txt_order_status) ;
+        recyclerView=(RecyclerView)findViewById(R.id.rcy_items_in_order);
 
         TextView titler=(TextView) findViewById(R.id.resturant_title);
         titler.setText(resturant_name);
@@ -101,11 +92,137 @@ public class WaitingActivity extends AppCompatActivity {
         Glide.with(this).load(R.drawable.cuttlery).into(cuti);
         Glide.with(this).load(R.drawable.callwaiter).into(waiti);
         Glide.with(this).load(R.drawable.report).into(repi);
-        ImageButton img=(ImageButton)findViewById(R.id.pic);
-        Glide.with(this).load(R.drawable.preparing).into(img);
+
+
         Notification n=new Notification();
         n.setTable_no(table);
         n.setUser_id(FirebaseAuth.getInstance().getUid());
+        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.exists())
+                {
+                    String s=dataSnapshot.getValue(String.class);
+                    //   Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+                    table=s;
+                    if(s.equals("not_available"))
+                    {
+                        table_no_textview.setText("You are not assigned a table by the Resturant");
+                        pay.setEnabled(false);
+                        pay.setBackgroundColor(Color.GRAY);
+                        table_no_image.setImageResource(R.drawable.rejected_icon);
+
+                    }
+                    else if(s.equals("waiting"))
+                    {
+                        table_no_textview.setText("You will be assigned a table soon");
+                        table_no_image.setImageResource(R.drawable.waiting_icon);
+                        pay.setEnabled(false);
+                        pay.setBackgroundColor(Color.GRAY);
+                    }
+                    else if(Integer.parseInt(s)<1000)
+                    {
+
+                        table=s;
+                        pay.setEnabled(true);
+                        pay.setBackgroundColor(Color.GREEN);
+                        table_no_textview.setText("You have been assigned table no "+Integer.parseInt(s));
+                        table_no_image.setImageResource(R.drawable.accepted_icon);
+                        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("pending").child(order_id).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                Order order=dataSnapshot.getValue(Order.class);
+                                adapter=new OrderItemSingleOrderAdapter(order.getCuisines(),order.getCount());
+                                recyclerView.setHasFixedSize(true);
+                                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                                recyclerView.setAdapter(adapter);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("pending").child(order_id).child("status").addValueEventListener(new ValueEventListener() {
+                            @Override
+
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.exists())
+                                {
+                                    String s=dataSnapshot.getValue(String.class);
+                                    if(s.equals("waiting"))
+                                    {
+                                        order_status_textview.setText("Your order will be accepted soon");
+                                        order_status_image.setImageResource(R.drawable.waiting_icon);
+                                    }
+                                    else if(s.equals("Accepted"))
+                                    {
+                                        order_status_textview.setText("Your order is Accepted by the resturant");
+                                        order_status_image.setImageResource(R.drawable.accepted_icon);
+                                    }
+                                    else if(s.equals("Cooking"))
+                                    {
+                                        order_status_textview.setText("Your order is being prepared");
+                                        order_status_image.setImageResource(R.drawable.cooking_50);
+                                    }
+                                    else if(s.equals("Served"))
+                                    {
+                                        order_status_textview.setText("Your order is served");
+                                        order_status_image.setImageResource(R.drawable.served_n);
+
+                                    }
+                                    else if(s.equals("Rejeceted"))
+                                    {
+                                        order_status_textview.setText("Your order is Rejected by the resturant");
+                                        order_status_image.setImageResource(R.drawable.rejected_icon);
+                                    }
+
+
+                                }else
+                                {
+                                    order_status_textview.setText("Your order is not submitted yet");
+                                    order_status_image.setImageResource(R.drawable.waiting_icon);
+
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        //return;
+                    }
+                }
+                else
+                {
+                    Intent i=new Intent(getApplicationContext(),ArrivingBillActivity.class);
+                    i.putExtra("resturant_id",resturant_id);
+                    SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    city=PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("city","patiala");
+                    i.putExtra("city",city);
+                    getSharedPreferences("global",MODE_PRIVATE).edit().clear().commit();
+
+
+                    startActivity(i);
+                    finish();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+
         pay.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -138,7 +255,7 @@ public class WaitingActivity extends AppCompatActivity {
 
                 FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).removeValue();
                 Intent i=new Intent(getApplicationContext(),ArrivingBillActivity.class);
-                i.putExtra("resturant_id","8146481114");
+                i.putExtra("resturant_id",resturant_id);
                 SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 city=PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("city","patiala");
                 i.putExtra("city",city);

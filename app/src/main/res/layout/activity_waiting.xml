@@ -85,23 +85,85 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical">
-            <ImageButton
-                android:id="@+id/pic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:src="@drawable/logo_white_large">
+           <RelativeLayout
 
-            </ImageButton>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                android:text="Please wait while the resturant Accepts your order"
-                android:textColor="@color/colorPrimary">
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+               <TextView
 
-            </TextView>
+                   android:padding="10dp"
+                   android:gravity="center_vertical"
+                   android:id="@+id/txt_table_no"
+                   android:layout_width="wrap_content"
+                   android:layout_height="50dp"
+                   android:textStyle="bold"
+                   android:text="You will be shortly Assigned a  table"
+                   ></TextView>
+               <ImageView
+                   android:layout_alignParentRight="true"
+                   android:layout_width="50dp"
+                   android:layout_marginRight="10dp"
+                   android:id="@+id/img_table_no"
+                   android:src="@drawable/waiting_icon"
+                   android:layout_height="50dp">
+
+               </ImageView>
+
+           </RelativeLayout>
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+
+                    android:padding="10dp"
+                    android:gravity="center_vertical"
+                    android:id="@+id/txt_order_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:textStyle="bold"
+                    android:text="Your order will be submitted soon"
+                    ></TextView>
+                <ImageView
+                    android:id="@+id/img_order_status"
+                    android:layout_marginRight="10dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="50dp"
+                    android:src="@drawable/rejected_icon"
+                    android:layout_height="50dp">
+
+                </ImageView>
+
+            </RelativeLayout>
+            <Button
+
+                android:layout_margin="5dp"
+                android:drawablePadding="5dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ordered Items"
+
+
+                android:textColor="@android:color/white"
+                android:background="@color/colorPrimary"></Button>
+
+            <androidx.cardview.widget.CardView
+              android:background="@drawable/background"
+              android:layout_margin="5dp"
+              app:cardCornerRadius="10dp"
+              android:padding="10dp"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+              <androidx.recyclerview.widget.RecyclerView
+                  android:layout_margin="10dp"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/rcy_items_in_order">
+
+              </androidx.recyclerview.widget.RecyclerView>
+          </androidx.cardview.widget.CardView>
         </LinearLayout>
         <LinearLayout
             android:weightSum="2"
@@ -243,23 +305,6 @@
                 android:background="@color/colorPrimary"></Button>
         </LinearLayout>
 
-        <Button
-
-            android:drawablePadding="5dp"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Active Orders"
-            android:layout_margin="5dp"
-
-            android:textColor="@android:color/white"
-            android:background="@color/colorPrimary"></Button>
-        <androidx.recyclerview.widget.RecyclerView
-            android:background="@drawable/background"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/active_orders"></androidx.recyclerview.widget.RecyclerView>
-
-    </LinearLayout>
+               </LinearLayout>
 </ScrollView>
 </LinearLayout>

@@ -25,17 +25,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.menuapp.Models.FoodType;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,6 +56,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
+    ExpandableListView expandableListView;
+    HashMap<String,Cuisine> map=new HashMap<>();
+    HashMap<String,Cuisine> allMap=new HashMap<>();
+    ArrayList<FoodType> foodTypes=new ArrayList<>();
+    ArrayList<FoodType> allFoodTYpes=new ArrayList<>();
     ArrayList<Cuisine> data=new ArrayList<>();
     ArrayList<Cuisine> cartCuisine=new ArrayList<>();
     ArrayList<Integer> cartCount=new ArrayList<>();
@@ -63,6 +72,7 @@ public class MainActivity extends AppCompatActivity  {
     String resturant_id="";
     String resturant_name;
     String user_name;
+    CustomExpandableAdapter customExpandableAdapter;
     String user_email;
     String user_phone_no;
     androidx.appcompat.widget.SearchView searchView;
@@ -73,10 +83,6 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        cartCuisine.clear();
-        cartCount.clear();
-        tcart.clear();
-        tcount.clear();
         user_name= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uname","123");
         user_phone_no= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uphone","123");
         user_email= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uemail","123");
@@ -86,6 +92,42 @@ public class MainActivity extends AppCompatActivity  {
         searchView=(androidx.appcompat.widget.SearchView )findViewById(R.id.search) ;
         resturant_title=(TextView)findViewById(R.id.resturant_title);
         resturant_title.setText(resturant_name);
+        cartCuisine.clear();
+        cartCount.clear();
+        tcart.clear();
+        tcount.clear();
+        expandableListView=(ExpandableListView)findViewById(R.id.expandablelistview);
+        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("cuisines").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot parent:dataSnapshot.getChildren())
+                {
+                    FoodType foodType=new FoodType();
+                    foodType.setName(parent.getKey());
+
+                    for(DataSnapshot child:parent.getChildren())
+                    {
+                        Cuisine c=child.getValue(Cuisine.class);
+                        foodType.getCuisines().add(c);
+                    }
+                    foodTypes.add(foodType);
+
+                }
+                allFoodTYpes.addAll(foodTypes);
+                 customExpandableAdapter=new CustomExpandableAdapter(getApplicationContext(),foodTypes);
+                expandableListView.setAdapter(customExpandableAdapter);
+                expandAll();
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
         searchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -259,8 +301,8 @@ public class MainActivity extends AppCompatActivity  {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
-                adp.getFilter().filter(newText);
+               customExpandableAdapter.filter(newText);
+               expandAll();
                 return true;
             }
         });
@@ -305,7 +347,8 @@ public class MainActivity extends AppCompatActivity  {
             Glide.with(getApplicationContext())
                     .load(cuisine.getPicture())
 
-                    .into(holder.picture);         holder.add.setOnClickListener(new View.OnClickListener() {
+                    .into(holder.picture);
+            holder.add.setOnClickListener(new View.OnClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onClick(View v) {
@@ -344,7 +387,7 @@ public class MainActivity extends AppCompatActivity  {
         }
         class holder extends RecyclerView.ViewHolder  {
             TextView name,description,availability;
-            ImageButton picture;
+            ImageView picture;
             Button add;
             RatingBar ratingBar;
             public holder(@NonNull View itemView) {
@@ -353,7 +396,7 @@ public class MainActivity extends AppCompatActivity  {
                 name=(TextView)itemView.findViewById(R.id.cousine_name);
                 description=(TextView)itemView.findViewById(R.id.description);
                 availability=(TextView)itemView.findViewById((R.id.about));
-                picture=(ImageButton)itemView.findViewById(R.id.picture);
+                picture=(ImageView) itemView.findViewById(R.id.picture);
                 add=(Button)itemView.findViewById(R.id.add);
                 ratingBar=(RatingBar)itemView.findViewById(R.id.ratingBar);
 
@@ -445,6 +488,242 @@ public class MainActivity extends AppCompatActivity  {
 
     // Before 2.0
 
+    class CustomExpandableAdapter extends BaseExpandableListAdapter
+    {
+        Context context;
+        ArrayList<FoodType> foodTypes;
+        CustomExpandableAdapter(Context c,ArrayList<FoodType> l)
+        {
+            context=c;
+            foodTypes=l;
+        }
+        @Override
+        public int getGroupCount() {
+            return foodTypes.size();
+        }
 
+        @Override
+        public int getChildrenCount(int groupPosition) {
+            return foodTypes.get(groupPosition).getCuisines().size();
+        }
+
+        @Override
+        public Object getGroup(int groupPosition) {
+            return foodTypes.get(groupPosition);
+        }
+
+        @Override
+        public Object getChild(int groupPosition, int childPosition) {
+            return foodTypes.get(groupPosition).getCuisines().get(childPosition);
+        }
+
+        @Override
+        public long getGroupId(int groupPosition) {
+            return groupPosition;
+        }
+
+        @Override
+        public long getChildId(int groupPosition, int childPosition) {
+            return childPosition;
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return false;
+        }
+
+        @Override
+        public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+            FoodType foodType=foodTypes.get(groupPosition);
+            if(convertView==null)
+            {
+                convertView= LayoutInflater.from(context).inflate(R.layout.expandablelistviewheader,null);
+            }
+            TextView textView=convertView.findViewById(R.id.foodtypename);
+            textView.setText(foodType.getName());
+
+            return convertView;
+        }
+
+        @Override
+        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+            final Cuisine c=foodTypes.get(groupPosition).getCuisines().get(childPosition);
+            View itemView;
+//            Toast.makeText(context,c.cousine_name,Toast.LENGTH_LONG).show();
+            if(convertView==null)
+            {
+                itemView=LayoutInflater.from(context).inflate(R.layout.menuitem,null);
+            }
+            else
+            {
+                itemView=convertView;
+            }
+            TextView name,description,availability;
+            ImageView picture;
+            final Button add,remove,text;
+            RatingBar ratingBar;
+
+            name=(TextView)itemView.findViewById(R.id.cousine_name);
+            description=(TextView)itemView.findViewById(R.id.description);
+            availability=(TextView)itemView.findViewById((R.id.about));
+            picture=(ImageView) itemView.findViewById(R.id.picture);
+            add=(Button)itemView.findViewById(R.id.add);
+            ratingBar=(RatingBar)itemView.findViewById(R.id.ratingBar);
+            name.setText(c.cousine_name);
+            remove=itemView.findViewById(R.id.subtract);
+            text=itemView.findViewById(R.id.textadd);
+            if(c.price.equals(c.discount_price))
+            {
+                description.setText("Rs: "+c.price);
+            }
+            else
+            {
+                description.setText("Rs: "+c.price+"   "+c.discount_price,TextView.BufferType.SPANNABLE);
+
+                Spannable spannable = (Spannable) description.getText();
+                spannable.setSpan(new StrikethroughSpan(), 4, 9, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            }
+
+            availability.setText(c.about);
+            ratingBar.setRating(5);
+            ratingBar.setVisibility(View.GONE);
+           if(!c.getPicture().equals(""))
+           {
+               Glide.with(getApplicationContext())
+                       .load(c.getPicture())
+
+                       .into(picture);
+           }
+           else
+           {
+               picture.setVisibility(View.GONE);
+           }
+           if(c.veg_nonveg.equals("non_veg"))
+           {
+
+               name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.nonveg_vector, 0, 0, 0);
+           }
+            add.setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onClick(View v) {
+                    if(true)
+                    {
+
+                        if(cartCuisine.contains(c))
+                        {
+                            cartCount.set(cartCuisine.indexOf(c),cartCount.get(cartCuisine.indexOf(c))+1);
+                            int count=cartCount.get(cartCuisine.indexOf(c));
+                            text.setText(Integer.toString(count));
+                        }
+                        else
+                        {
+                            cartCuisine.add(c);
+                            cartCount.add(1);
+                            text.setText("1");
+                        }
+                        // cart.put(cuisine,cart.getOrDefault(cuisine,0)+1);
+                        //holder.add.setText(Integer.toString(cart.get(cuisine))+" selected");
+                        count+=1;
+                        if (cartCuisine.size() == 0) {
+                            btncart.setVisibility(View.GONE);
+                        }
+                        else
+                        {
+                            btncart.setVisibility(View.VISIBLE);
+                            btncart.setText(Integer.toString(count)+" Items in Cart");
+                        }
+                    }
+                }
+            });
+           remove.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   if(!cartCuisine.contains(c))
+                   {
+                       return;
+                   }
+                   else
+                   {
+                       count-=1;
+                       int co=cartCount.get(cartCuisine.indexOf(c));
+                       if(co==1)
+                       {
+                           cartCount.remove(cartCuisine.indexOf(c));
+                           cartCuisine.remove(c);
+                           if(cartCuisine.size()==0)
+                           {
+                               btncart.setVisibility(View.GONE);
+                               text.setText("ADD");
+                           }
+                       }
+                       else
+                       {
+                           cartCount.set(cartCuisine.indexOf(c),co-1);
+                           text.setText(Integer.toString(co-1));
+                       }
+                       if (cartCuisine.size() == 0) {
+                           btncart.setVisibility(View.GONE);
+                       }
+                       else
+                       {
+                           btncart.setVisibility(View.VISIBLE);
+                           btncart.setText(Integer.toString(count)+" Items in Cart");
+                       }
+                   }
+               }
+           });
+            return itemView;
+        }
+
+        @Override
+        public boolean isChildSelectable(int groupPosition, int childPosition) {
+            return false;
+        }
+        void filter(String s)
+        {
+            foodTypes.clear();
+            if(s.equals(""))
+            {
+                foodTypes.addAll(allFoodTYpes);
+            }
+            else
+            {
+                for(FoodType f:allFoodTYpes)
+                {
+                    FoodType x = null;
+                    for(Cuisine c:f.getCuisines())
+                    {
+                        if(c.getCousine_name().toLowerCase().contains(s.toLowerCase()))
+                        {
+                            if(x==null)
+                            {
+                                x=new FoodType();
+                                x.setName(c.getCousine_name());
+                                x.getCuisines().add(c);
+
+                            }
+                            else
+                            {
+                                x.getCuisines().add(c);
+                            }
+                        }
+                    }
+                    if(x!=null)
+                    {
+                        foodTypes.add(x);
+                    }
+                }
+            }
+            notifyDataSetChanged();
+        }
+    }
+    private void expandAll() {
+        int count = customExpandableAdapter.getGroupCount();
+        for (int i = 0; i < count; i++){
+            expandableListView.expandGroup(i);
+        }
+    }
 
 }
