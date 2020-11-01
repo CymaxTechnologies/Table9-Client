@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 <androidx.cardview.widget.CardView
+    app:contentPadding="10dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
@@ -31,6 +32,7 @@
             </TextView>
 
             <TextView
+                android:textStyle="bold"
                 android:id="@+id/cart_item_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -49,17 +51,52 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/cart_remove"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/add"
-                android:drawableLeft="@drawable/ic_baseline_remove_circle_outline_24"
-                android:text="Remove"
-                android:textColor="#ffffff"
-                android:textSize="8sp">
+            <LinearLayout
 
-            </Button>
+
+                android:layout_gravity="right"
+                android:padding="5dp"
+                android:gravity="right"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:padding="2dp"
+                    android:id="@+id/subtract"
+                    android:layout_width="25dp"
+                    android:layout_height="30dp"
+
+                    android:layout_marginRight="0dp"
+
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:drawableLeft="@drawable/minus_white"
+                    android:textColor="#FFFFFF"></Button>
+                <Button
+                    android:padding="2dp"
+                    android:id="@+id/textadd"
+                    android:layout_width="40dp"
+                    android:layout_height="30dp"
+
+                    android:layout_marginRight="0dp"
+
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:text="Add"
+                    android:textColor="#FFFFFF"></Button>
+                <Button
+                    android:id="@+id/add"
+                    android:layout_width="25dp"
+                    android:layout_height="30dp"
+                    android:padding="2dp"
+                    android:layout_marginRight="0dp"
+
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:drawableRight="@drawable/plus"
+                    android:textColor="#FFFFFF"></Button>
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/cart_total"

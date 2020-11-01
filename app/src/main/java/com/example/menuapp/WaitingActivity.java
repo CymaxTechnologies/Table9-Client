@@ -7,13 +7,17 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Entity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -59,6 +63,7 @@ public class WaitingActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     OrderItemSingleOrderAdapter adapter;
     ArrayList<Order> list=new ArrayList<>();
+    Intent floating_view_service;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +97,7 @@ public class WaitingActivity extends AppCompatActivity {
         Glide.with(this).load(R.drawable.cuttlery).into(cuti);
         Glide.with(this).load(R.drawable.callwaiter).into(waiti);
         Glide.with(this).load(R.drawable.report).into(repi);
-
+        floating_view_service=new Intent(WaitingActivity.this, FloatingViewService.class);
 
         Notification n=new Notification();
         n.setTable_no(table);
@@ -129,14 +134,33 @@ public class WaitingActivity extends AppCompatActivity {
                         pay.setBackgroundColor(Color.GREEN);
                         table_no_textview.setText("You have been assigned table no "+Integer.parseInt(s));
                         table_no_image.setImageResource(R.drawable.accepted_icon);
-                        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("pending").child(order_id).addListenerForSingleValueEvent(new ValueEventListener() {
+                        FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("my_orders").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                Order order=dataSnapshot.getValue(Order.class);
-                                adapter=new OrderItemSingleOrderAdapter(order.getCuisines(),order.getCount());
-                                recyclerView.setHasFixedSize(true);
-                                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                                recyclerView.setAdapter(adapter);
+                                if(dataSnapshot.exists())
+                                {
+                                    if(!isMyServiceRunning(FloatingViewService.class))
+                                    {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(WaitingActivity.this)) {
+                                            askPermission();
+                                        }
+                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                                            startService(floating_view_service);
+                                            // finish();
+                                        } else if (Settings.canDrawOverlays(WaitingActivity.this
+                                        )) {
+                                            startService(floating_view_service);
+
+                                        } else {
+                                            askPermission();
+                                            Toast.makeText(WaitingActivity.this, "You need System Alert Window Permission to do this", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    stopService(floating_view_service);
+                                }
                             }
 
                             @Override
@@ -194,6 +218,28 @@ public class WaitingActivity extends AppCompatActivity {
                             }
                         });
 
+                        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("pending").child(order_id).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists())
+                            {
+                                Order order=dataSnapshot.getValue(Order.class);
+                                if(order==null)
+                                {
+                                    order=new Order();
+                                }
+                                adapter=new OrderItemSingleOrderAdapter(order.getCuisines(),order.getCount());
+                                recyclerView.setHasFixedSize(true);
+                                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                                recyclerView.setAdapter(adapter);
+                            }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
                         //return;
                     }
                 }
@@ -384,5 +430,19 @@ public class WaitingActivity extends AppCompatActivity {
         finish();
         super.onBackPressed();
 
+    }
+    private void askPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, 1);
+    }
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

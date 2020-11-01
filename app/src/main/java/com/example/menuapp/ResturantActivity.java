@@ -3,12 +3,14 @@ package com.example.menuapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -75,6 +77,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
     String cityx;
     ArrayList<Resturant> alldata = new ArrayList<>();
     String city = "";
+    Intent floating_view_service;
     private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +87,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
         final SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
          cityx=sharedPreferences.getString("city","Patiala");
         adapter=new ResturantAdapter();
+        floating_view_service=new Intent(ResturantActivity.this, FloatingViewService.class);
         alldata.addAll(data);
         recyclerView=(RecyclerView)findViewById(R.id.resturant_list);
         recyclerView.setHasFixedSize(true);
@@ -100,35 +104,44 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
         });
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            askPermission();
-        }
-        else
-        {
 
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            startService(new Intent(ResturantActivity.this, FloatingViewService.class));
-            finish();
-        } else if (Settings.canDrawOverlays(this)) {
-            startService(new Intent(ResturantActivity.this, FloatingViewService.class));
 
-        } else {
-            askPermission();
-            Toast.makeText(this, "You need System Alert Window Permission to do this", Toast.LENGTH_SHORT).show();
-        }
-        getSupportActionBar().setTitle("Select Resturant");
-        if (ContextCompat.checkSelfPermission(ResturantActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(ResturantActivity.this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                ActivityCompat.requestPermissions(ResturantActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            } else {
-                ActivityCompat.requestPermissions(ResturantActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+
+        FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("my_orders").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists())
+                {
+                    if(!isMyServiceRunning(FloatingViewService.class))
+                    {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(ResturantActivity.this)) {
+                            askPermission();
+                        }
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                            startService(floating_view_service);
+                            // finish();
+                        } else if (Settings.canDrawOverlays(ResturantActivity.this
+                        )) {
+                            startService(floating_view_service);
+
+                        } else {
+                            askPermission();
+                            Toast.makeText(ResturantActivity.this, "You need System Alert Window Permission to do this", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+                else
+                {
+                    stopService(floating_view_service);
+                }
             }
-        }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         FirebaseMessaging.getInstance().subscribeToTopic("all");
         String resturant_id = getSharedPreferences("global", MODE_PRIVATE).getString("resturant_id", "123");
         if (!resturant_id.equals("123")) {
@@ -283,18 +296,19 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
     {
         class  holder extends RecyclerView.ViewHolder
         {
-            TextView name,address,mobile,category;
-            Button check_in,locate;
+            TextView name,address,mobile,category,time;
+            CardView cardView;
+
             ImageView picture;
 
             public holder(@NonNull View itemView) {
                 super(itemView);
+                cardView=itemView.findViewById(R.id.cardshowres);
                 name=itemView.findViewById(R.id.resturant_name);
                 address=itemView.findViewById(R.id.resturant_addres);
                 mobile=itemView.findViewById(R.id.resturant_contact);
                 category=itemView.findViewById(R.id.resturant_category);
-                check_in=itemView.findViewById(R.id.resturant_checkin);
-                locate=itemView.findViewById(R.id.resturant_locate);
+                time=itemView.findViewById(R.id.time);
                 picture=itemView.findViewById(R.id.picture);
             }
         }
@@ -314,14 +328,8 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                 holder.address.setText(resturant.address);
                 holder.mobile.setText(resturant.contact);
                 holder.category.setText(resturant.category);
-
-                FirebaseMessaging.getInstance().subscribeToTopic(FirebaseAuth.getInstance().getUid());
-          //  Glide.with(getApplicationContext())
-           //         .load(holder.picture)
-
-              //      .into(holder.picture);
-//            Glide.with(getApplicationContext()).load(resturant.image).into(holder.picture);
-                holder.check_in.setOnClickListener(new View.OnClickListener() {
+                holder.time.setText(resturant.timing);
+                holder.cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent i=new Intent(getApplicationContext(),MainActivity.class);
@@ -340,23 +348,15 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                         i.putExtra("table","");
                         i.putExtra("name",resturant.name);
                         startActivity(i);
-                        //finish();
                     }
                 });
-                holder.locate.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                FirebaseMessaging.getInstance().subscribeToTopic(FirebaseAuth.getInstance().getUid());
+          //  Glide.with(getApplicationContext())
+           //         .load(holder.picture)
 
-                    }
-                });
-                holder.locate.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String uri = String.format(Locale.ENGLISH, "geo:%f,%f", Float.parseFloat(resturant.latitude), Float.parseFloat(resturant.longitude));
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                        startActivity(intent);
-                    }
-                });
+              //      .into(holder.picture);
+//            Glide.with(getApplicationContext()).load(resturant.image).into(holder.picture);
+
         }
 
         @Override
@@ -430,5 +430,14 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
     protected void onDestroy() {
 
         super.onDestroy();
+    }
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

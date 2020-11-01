@@ -87,6 +87,7 @@ public class Login extends AppCompatActivity {
                     Intent i=new Intent(Login.this,OtpVerificationActivity.class);
                     i.putExtra("phone",phone.getText().toString());
                     startActivity(i);
+                    finish();
                 }
             }
         });

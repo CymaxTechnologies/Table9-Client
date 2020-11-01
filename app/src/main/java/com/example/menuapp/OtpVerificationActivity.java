@@ -165,6 +165,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                     }
                                 });
                                 startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                                finish();
                             } else {
                                 Toast.makeText(OtpVerificationActivity.this,task.getException().getMessage(),Toast.LENGTH_SHORT).show();
 
@@ -195,6 +196,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                 editor.putString("uemail",userProfile.email);
                                 editor.apply();
                                 startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
+                                finish();
                             }
                             else {
                                 startActivity(new Intent(getApplicationContext(),ResturantActivity.class));

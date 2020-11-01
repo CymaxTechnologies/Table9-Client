@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +54,7 @@ public class CartActivity extends AppCompatActivity {
     ArrayList<Cuisine> cart;
     ArrayList<Integer> count;
     int total=0;
+    Button text;
     Button cartSend;
     private APIService apiService;
     ProgressDialog progressDialog;
@@ -78,7 +80,7 @@ public class CartActivity extends AppCompatActivity {
         user_email= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uemail","123");
 
         // progressDialog.show();
-        cartSend=findViewById(R.id.cartSend);
+        cartSend=(Button)findViewById(R.id.cartSend);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
         cart=(ArrayList<Cuisine>)getIntent().getSerializableExtra("cartI");
@@ -86,6 +88,7 @@ public class CartActivity extends AppCompatActivity {
         final Notification notification=new Notification();
         notification.setUser_id(FirebaseAuth.getInstance().getUid());
         notification.setResturant_id(resturant_id);
+        text=(Button) findViewById(R.id.text);
 
         notification.setMessage("New Client request from user "+FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
         if(!table.equals("")&&table!=null)
@@ -351,12 +354,13 @@ public class CartActivity extends AppCompatActivity {
         total=0;
         if(cart.size()==0)
         {
-            cartSend.setText("Items :"+cart.size()+"Total Rs "+Integer.toString(total)+"  Place order");
+            text.setText("Rs "+Integer.toString(total));
+            finish();
             return;
         }
         for (int i = 0; i <cart.size() ; i++) {
             total+=Integer.parseInt(cart.get(i).getPrice())*count.get(i);
-            cartSend.setText("Items :"+cart.size()+"Total Rs "+Integer.toString(total)+"  Place order");
+            text.setText("Rs "+Integer.toString(total));
         }
 
     }
@@ -373,9 +377,9 @@ public class CartActivity extends AppCompatActivity {
            Cuisine c=cart.get(position);
            final int co=count.get(position);
            holder.name.setText(c.cousine_name);
-           holder.price.setText(Integer.toString(co)+" *"+c.price);
-           holder.total.setText("Total: " +Integer.toString(Integer.parseInt(c.getPrice())*co));
-           holder.remove.setOnClickListener(new View.OnClickListener() {
+           holder.price.setText("Rs: " +c.price);
+           holder.total.setText("Rs: " +Integer.toString(Integer.parseInt(c.getPrice())*co));
+           holder.add.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View v) {
                    if(co==1)
@@ -393,7 +397,14 @@ public class CartActivity extends AppCompatActivity {
 
                }
            });
-
+         holder.remove.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 count.remove(position);
+                 count.add(position,co+1);
+                 notifyDataSetChanged();
+             }
+         });
         }
 
         @Override
@@ -401,14 +412,16 @@ public class CartActivity extends AppCompatActivity {
             return cart.size();
         }
         class holder extends RecyclerView.ViewHolder {
-            TextView name,price,total;
+            TextView name,price,total,add;
             Button remove;
             public holder(@NonNull View itemView) {
                 super(itemView);
                 name=itemView.findViewById(R.id.cart_item_name);
                 price=itemView.findViewById(R.id.cart_item_price);
                 total=itemView.findViewById(R.id.cart_total);
-                remove= itemView.findViewById(R.id.cart_remove);
+                remove= itemView.findViewById(R.id.add);
+                add=itemView.findViewById(R.id.subtract);
+
             }
         }
     }

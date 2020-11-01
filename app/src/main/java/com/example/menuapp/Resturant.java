@@ -11,10 +11,18 @@ public class Resturant {
     //Location location
     // ;
     @PrimaryKey(autoGenerate = true)
-
    public long p_id;
    public float rating;
    public int count;
+   public String timing="9AM to 10PM";
+
+    public String getTiming() {
+        return timing;
+    }
+
+    public void setTiming(String timing) {
+        this.timing = timing;
+    }
 
     public int getCount() {
         return count;

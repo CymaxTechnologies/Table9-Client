@@ -8,7 +8,7 @@ import androidx.room.Room;
 
 import com.example.menuapp.Resturant;
 
-@Database(entities = Resturant.class,version = 2)
+@Database(entities = Resturant.class,version = 3)
 public abstract  class RoomDatabase extends androidx.room.RoomDatabase {
     private static String DB_NAME="My_DB";
  public static    RoomDatabase roomDatabase;
