@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,8 +55,9 @@ public class CartActivity extends AppCompatActivity {
     ArrayList<Cuisine> cart;
     ArrayList<Integer> count;
     int total=0;
-    Button text;
-    Button cartSend;
+    TextView text;
+    TextView no_of_item;
+    RelativeLayout cartSend;
     private APIService apiService;
     ProgressDialog progressDialog;
     String table="waiting";
@@ -80,7 +82,8 @@ public class CartActivity extends AppCompatActivity {
         user_email= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uemail","123");
 
         // progressDialog.show();
-        cartSend=(Button)findViewById(R.id.cartSend);
+        no_of_item=(TextView)findViewById(R.id.no_of_items) ;
+        cartSend=(RelativeLayout) findViewById(R.id.cartSend);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
         cart=(ArrayList<Cuisine>)getIntent().getSerializableExtra("cartI");
@@ -88,7 +91,7 @@ public class CartActivity extends AppCompatActivity {
         final Notification notification=new Notification();
         notification.setUser_id(FirebaseAuth.getInstance().getUid());
         notification.setResturant_id(resturant_id);
-        text=(Button) findViewById(R.id.text);
+        text=(TextView) findViewById(R.id.text);
 
         notification.setMessage("New Client request from user "+FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
         if(!table.equals("")&&table!=null)
@@ -253,6 +256,7 @@ public class CartActivity extends AppCompatActivity {
                     i.putExtra("name",resturant_name);
                     i.putExtra("resturant_id",resturant_id);
                     i.putExtra("order_id",order.getOrder_id());
+                    i.putExtra("order",order);
                     startActivity(i);
                     finish();
                    return ;
@@ -308,6 +312,7 @@ public class CartActivity extends AppCompatActivity {
                          i.putExtra("name",resturant_name);
                          i.putExtra("resturant_id",resturant_id);
                          i.putExtra("order_id",order.getOrder_id());
+                         i.putExtra("order",order);
 
                          Notification n=new Notification();
                          notification.setUser_id(FirebaseAuth.getInstance().getUid());
@@ -354,11 +359,13 @@ public class CartActivity extends AppCompatActivity {
         total=0;
         if(cart.size()==0)
         {
+            no_of_item.setText(cart.size()+" ITEMS");
             text.setText("Rs "+Integer.toString(total));
             finish();
             return;
         }
         for (int i = 0; i <cart.size() ; i++) {
+            no_of_item.setText(cart.size()+" ITEMS");
             total+=Integer.parseInt(cart.get(i).getPrice())*count.get(i);
             text.setText("Rs "+Integer.toString(total));
         }
@@ -402,6 +409,7 @@ public class CartActivity extends AppCompatActivity {
              public void onClick(View v) {
                  count.remove(position);
                  count.add(position,co+1);
+                 updateButton();
                  notifyDataSetChanged();
              }
          });
@@ -465,6 +473,16 @@ public class CartActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(),Login.class));
             finish();
         }
+        if(item.getItemId()==R.id.profile)
+        {
+            startActivity(new Intent(getApplicationContext(),UserProfileActivity.class));
+
+        }
+        if(item.getItemId()==R.id.myorders)
+        {
+            startActivity(new Intent(getApplicationContext(),My_Active_Orders_Activity.class));
+
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -484,8 +502,8 @@ public class CartActivity extends AppCompatActivity {
                 //FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").removeValue();
 
             }
-            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").setValue(cart);
-            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").setValue(count);
+            //FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").setValue(cart);
+           // FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").setValue(count);
             Intent i=new Intent(getApplicationContext(),MainActivity.class);
             startActivity(i);
             finish();

@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:drawableLeft="@drawable/menu"
+
                 android:drawablePadding="5dp"
                 android:text="Resturant Name"
                 android:textSize="20dp"
@@ -51,56 +51,58 @@
                     android:drawableLeft="@drawable/ic_baseline_restaurant_24"
                     android:layout_margin="5dp"
                     android:text="Category"></TextView>
-
-                <TextView
-                    android:layout_alignParentRight="true"
-                    android:drawablePadding="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/time"
-                    android:layout_margin="5dp"
-                    android:text="Category"></TextView>
-            </RelativeLayout>
-
-            <TextView
-                android:drawablePadding="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/resturant_addres"
-
-
-                android:drawableLeft="@drawable/location_24_orange"
-                android:layout_margin="5dp"
-                android:text="Addreassnd location on click"></TextView>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:weightSum="2"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:drawablePadding="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/resturant_contact"
-
-                    android:layout_weight="1"
-                    android:drawableLeft="@drawable/ic_baseline_phone_android_24"
-                    android:layout_margin="5dp"
-                    android:text="Phone/mobile"></TextView>
-
-               <RatingBar
-                   android:layout_alignParentRight="true"
-                   android:foregroundGravity="center_vertical"
-                   android:layout_gravity="right"
-                   android:rating="5"
+               <RelativeLayout
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   style="?attr/ratingBarStyleSmall"
-                   android:numStars="5"></RatingBar>
-            </RelativeLayout>
+            android:layout_alignParentRight="true">
+                  <LinearLayout
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:orientation="horizontal">
+
+                      <TextView
+                          android:drawableLeft="@drawable/star_orang"
+                          android:drawablePadding="5dp"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:id="@+id/ratingBar"
+                          android:layout_margin="5dp"
+                          android:text="Category"></TextView>
+
+                  </LinearLayout>
+               </RelativeLayout> </RelativeLayout>
+
+           <RelativeLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               >
+               <TextView
+                   android:drawablePadding="5dp"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:id="@+id/time"
 
 
+                   android:drawableLeft="@drawable/clock"
+                   android:layout_margin="5dp"
+                   android:text="Addreassnd location on click"></TextView>
+
+               <TextView
+                   android:drawablePadding="5dp"
+                   android:layout_alignParentRight="true"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:id="@+id/resturant_addres"
+
+
+                   android:drawableLeft="@drawable/location_24_orange"
+                   android:layout_margin="5dp"
+                   android:text="Addreassnd location on click"></TextView>
+
+
+
+
+           </RelativeLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

@@ -296,7 +296,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
     {
         class  holder extends RecyclerView.ViewHolder
         {
-            TextView name,address,mobile,category,time;
+            TextView name,address,mobile,category,time,rating;
             CardView cardView;
 
             ImageView picture;
@@ -306,7 +306,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                 cardView=itemView.findViewById(R.id.cardshowres);
                 name=itemView.findViewById(R.id.resturant_name);
                 address=itemView.findViewById(R.id.resturant_addres);
-                mobile=itemView.findViewById(R.id.resturant_contact);
+                rating=itemView.findViewById(R.id.ratingBar);
                 category=itemView.findViewById(R.id.resturant_category);
                 time=itemView.findViewById(R.id.time);
                 picture=itemView.findViewById(R.id.picture);
@@ -326,7 +326,8 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                 final Resturant resturant=data.get(position);
                 holder.name.setText(resturant.name);
                 holder.address.setText(resturant.address);
-                holder.mobile.setText(resturant.contact);
+                String s=String.format("%.1f", resturant.rating);;
+                holder.rating.setText(s+"/5");
                 holder.category.setText(resturant.category);
                 holder.time.setText(resturant.timing);
                 holder.cardView.setOnClickListener(new View.OnClickListener() {

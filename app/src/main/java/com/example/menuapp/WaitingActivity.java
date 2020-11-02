@@ -64,6 +64,7 @@ public class WaitingActivity extends AppCompatActivity {
     OrderItemSingleOrderAdapter adapter;
     ArrayList<Order> list=new ArrayList<>();
     Intent floating_view_service;
+    Order orderx;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +77,7 @@ public class WaitingActivity extends AppCompatActivity {
         table=(String)getIntent().getStringExtra("table");
         resturant_id=(String)getIntent().getStringExtra("resturant_id");
         resturant_name=(String)getIntent().getStringExtra("name");
+        orderx=(Order)getIntent().getSerializableExtra("order") ;
         ask=(CardView) findViewById(R.id.call_waiter);
         order=(Button) findViewById(R.id.place_more);
         repord=(CardView) findViewById(R.id.report_problem) ;
@@ -102,6 +104,10 @@ public class WaitingActivity extends AppCompatActivity {
         Notification n=new Notification();
         n.setTable_no(table);
         n.setUser_id(FirebaseAuth.getInstance().getUid());
+        adapter=new OrderItemSingleOrderAdapter(orderx.getCuisines(),orderx.getCount());
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.setAdapter(adapter);
         FirebaseDatabase.getInstance().getReference().child(resturant_id).child("table_assignment").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -218,29 +224,7 @@ public class WaitingActivity extends AppCompatActivity {
                             }
                         });
 
-                        FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("pending").child(order_id).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.exists())
-                            {
-                                Order order=dataSnapshot.getValue(Order.class);
-                                if(order==null)
-                                {
-                                    order=new Order();
-                                }
-                                adapter=new OrderItemSingleOrderAdapter(order.getCuisines(),order.getCount());
-                                recyclerView.setHasFixedSize(true);
-                                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                                recyclerView.setAdapter(adapter);
-                            }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                        //return;
                     }
                 }
                 else

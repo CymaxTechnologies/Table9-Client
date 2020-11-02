@@ -28,6 +28,7 @@
                 android:id="@+id/picture"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                android:layout_marginRight="7dp"
                 android:layout_weight="2"
 
                 android:src="@mipmap/ic_launcher">
@@ -35,23 +36,33 @@
             </ImageView>
 
             <LinearLayout
+                android:id="@+id/edittextlinearlayout"
                 android:layout_toRightOf="@+id/picture"
                 android:layout_gravity="left"
-                android:layout_width="140dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
                 android:orientation="vertical">
-
-                <TextView
-                    android:drawableLeft="@drawable/veg_vegctor"
-                    android:id="@+id/cousine_name"
-                    android:gravity="center_vertical"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="2dp"
-                    android:text="Cousine Nane"
-                    android:textSize="16dp"
-                    android:textStyle="bold"></TextView>
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_marginTop="2dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/veg_vegctor"></ImageView>
+                    <TextView
+
+                        android:id="@+id/cousine_name"
+                        android:gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="2dp"
+                        android:text="Cousine Nane"
+                        android:textSize="16dp"
+                        android:textStyle="bold"></TextView>
+                </LinearLayout>
                 <TextView
                     android:textStyle="bold"
                     android:id="@+id/description"

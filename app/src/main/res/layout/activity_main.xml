@@ -23,6 +23,8 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_margin="10dp"
+          android:tooltipText="Search Dish"
+          app:defaultQueryHint="Search dish"
           android:background="@drawable/circle"
           app:queryHint="Search Dish" />
       <androidx.cardview.widget.CardView
@@ -99,6 +101,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:visibility="gone"
+                android:layout_marginBottom="70dp"
                 android:layout_height="match_parent"
                 android:id="@+id/main_menu"/>
          </LinearLayout>

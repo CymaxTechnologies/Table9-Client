@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,6 +34,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -218,7 +220,7 @@ public class MainActivity extends AppCompatActivity  {
                     cartCount.addAll(tcount);
                     btncart.setVisibility(View.VISIBLE);
                     btncart.setText(Integer.toString(count)+" Items in Cart");
-
+                    customExpandableAdapter.notifyDataSetChanged();
 
                 }
                 else
@@ -447,8 +449,8 @@ public class MainActivity extends AppCompatActivity  {
     public void onBackPressed() {
         if(count>0)
         {
-            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").setValue(cartCuisine);
-            FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").setValue(cartCount);
+        //    FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").setValue(cartCuisine);
+          //  FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").setValue(cartCount);
 
 
 
@@ -545,12 +547,17 @@ public class MainActivity extends AppCompatActivity  {
             return convertView;
         }
 
+        @SuppressLint("SetTextI18n")
         @Override
         public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
             final Cuisine c=foodTypes.get(groupPosition).getCuisines().get(childPosition);
             View itemView;
+            if(groupPosition==foodTypes.size()-1&&childPosition==foodTypes.get(groupPosition).getCuisines().size()-1)
+            {
+
+            }
 //            Toast.makeText(context,c.cousine_name,Toast.LENGTH_LONG).show();
-            if(convertView==null)
+            if(true)
             {
                 itemView=LayoutInflater.from(context).inflate(R.layout.menuitem,null);
             }
@@ -558,11 +565,15 @@ public class MainActivity extends AppCompatActivity  {
             {
                 itemView=convertView;
             }
+            if(groupPosition==foodTypes.size()-1&&childPosition==foodTypes.get(groupPosition).getCuisines().size()-1)
+            {
+              itemView.setPadding(0,0,0,100);
+            }
             TextView name,description,availability;
             ImageView picture;
             final Button add,remove,text;
             RatingBar ratingBar;
-
+            LinearLayout linearLayout=itemView.findViewById(R.id.edittextlinearlayout);
             name=(TextView)itemView.findViewById(R.id.cousine_name);
             description=(TextView)itemView.findViewById(R.id.description);
             availability=(TextView)itemView.findViewById((R.id.about));
@@ -594,6 +605,10 @@ public class MainActivity extends AppCompatActivity  {
                        .load(c.getPicture())
 
                        .into(picture);
+               picture.setPadding(0,0,5,0);
+               ViewGroup.LayoutParams layoutParams=linearLayout.getLayoutParams();
+               layoutParams.width=220;
+               linearLayout.setLayoutParams(layoutParams);
            }
            else
            {
@@ -628,6 +643,7 @@ public class MainActivity extends AppCompatActivity  {
                         count+=1;
                         if (cartCuisine.size() == 0) {
                             btncart.setVisibility(View.GONE);
+
                         }
                         else
                         {
@@ -674,6 +690,7 @@ public class MainActivity extends AppCompatActivity  {
                    }
                }
            });
+
             return itemView;
         }
 

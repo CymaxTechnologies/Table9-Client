@@ -105,6 +105,11 @@ public class MyOrdersAdapter extends RecyclerView.Adapter<MyOrdersAdapter.holder
                    I.putExtra("resturant_id",order.getResturant_id());
                    I.putExtra("table",order.getTable());
                    I.putExtra("name",order.getResturant_name());
+
+                   I.putExtra("name",order.getResturant_name());
+
+                   I.putExtra("order_id",order.getOrder_id());
+                   I.putExtra("order",order);
                    c.startActivity(I);
                }
            });
