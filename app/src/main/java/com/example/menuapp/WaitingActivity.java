@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Entity;
 import android.content.Intent;
@@ -20,6 +22,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -91,7 +94,11 @@ public class WaitingActivity extends AppCompatActivity {
         order_status_image=(ImageView)findViewById(R.id.img_order_status);
         order_status_textview=(TextView)findViewById(R.id.txt_order_status) ;
         recyclerView=(RecyclerView)findViewById(R.id.rcy_items_in_order);
-
+        pay.setEnabled(false);
+        waiti.setEnabled(false);
+        cuti.setEnabled(false);
+        repi.setEnabled(false);
+        pay.setBackgroundColor(Color.GRAY);
         TextView titler=(TextView) findViewById(R.id.resturant_title);
         titler.setText(resturant_name);
         getSupportActionBar().hide();
@@ -136,10 +143,9 @@ public class WaitingActivity extends AppCompatActivity {
                     {
 
                         table=s;
-                        pay.setEnabled(true);
-                        pay.setBackgroundColor(Color.GREEN);
-                        table_no_textview.setText("You have been assigned table no "+Integer.parseInt(s));
                         table_no_image.setImageResource(R.drawable.accepted_icon);
+                        table_no_textview.setText("You have been assigned table no "+Integer.parseInt(s));
+
                         FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("my_orders").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -188,6 +194,12 @@ public class WaitingActivity extends AppCompatActivity {
                                     }
                                     else if(s.equals("Accepted"))
                                     {
+
+                                        pay.setBackgroundColor(Color.GREEN);
+                                        pay.setEnabled(true);
+                                        repi.setEnabled(true);
+                                        waiti.setEnabled(true);
+                                        cuti.setEnabled(true);
                                         order_status_textview.setText("Your order is Accepted by the resturant");
                                         order_status_image.setImageResource(R.drawable.accepted_icon);
                                     }
@@ -363,32 +375,55 @@ public class WaitingActivity extends AppCompatActivity {
         repi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Notification n=new Notification();
-                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                Date date = new Date();
-                n.setTable_no(table);
-                n.setTime(date.toString());
-                n.setTable_no(table);
-                n.setUser_id("123");
-                n.setUser_id(FirebaseAuth.getInstance().getUid());
-                n.setResturant_id(resturant_id);
-                n.setMessage("Reported a problem \n"+"Time : "+date.toString()+" by "+user_name);
-                DatabaseReference dr=ref.push();
-                n.setId(dr.getKey());
-                try {
-                    notiHelper.SendNotification(resturant_id,"Notification","Reporting Issue request from table no "+table+"\n "+dateFormat.format(date)+" by "+user_name);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                dr.setValue(n).addOnSuccessListener(new OnSuccessListener<Void>() {
+                final AlertDialog.Builder builder=new AlertDialog.Builder(WaitingActivity.this);
+                View view=getLayoutInflater().inflate(R.layout.reporting_layout,null);
+                builder.setView(view);
+                builder.setTitle("Report your complaint !");
+                builder.setIcon(R.drawable.mylogo);
+                final Dialog dialog=builder.create();
+                dialog.show();
+                Button send=view.findViewById(R.id.button);
+                final EditText message=view.findViewById(R.id.editTextTextPersonName);
+                send.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(getApplicationContext(),"Request sent",Toast.LENGTH_LONG).show();
+                    public void onClick(View v) {
+                        if(message.getText().toString().isEmpty())
+                        {
+                            Toast.makeText(getApplicationContext(),"Please enter a message",Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                            Notification n=new Notification();
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                            Date date = new Date();
+                            n.setTable_no(table);
+                            n.setTime(date.toString());
+                            n.setTable_no(table);
+                            n.setUser_id("123");
+                            n.setUser_id(FirebaseAuth.getInstance().getUid());
+                            n.setResturant_id(resturant_id);
+                            n.setMessage("Reported a problem \n"+"Time : "+date.toString()+" by "+user_name);
+                            n.setMessage("\n"+user_name+message.getText().toString());
+                            DatabaseReference dr=ref.push();
+                            n.setId(dr.getKey());
+                            try {
+                                notiHelper.SendNotification(resturant_id,"Notification","Reporting Issue request from table no "+table+"\n "+dateFormat.format(date)+" by "+user_name);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            dr.setValue(n).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(getApplicationContext(),"Request sent",Toast.LENGTH_LONG).show();
 
+                                }
+                            });
+                            dr=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("notification").child(n.getId());
+                            dr.setValue(n);
+                            dialog.dismiss();
+                        }
                     }
                 });
-                dr=FirebaseDatabase.getInstance().getReference().child(resturant_id).child("orders").child(table).child("notification").child(n.getId());
-                dr.setValue(n);
+
             }
         });
         order.setOnClickListener(new View.OnClickListener() {

@@ -26,6 +26,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -78,6 +81,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
     ArrayList<Resturant> alldata = new ArrayList<>();
     String city = "";
     Intent floating_view_service;
+    EditText editText_search;
     private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +106,23 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
 
             }
         });
+        editText_search=(EditText)findViewById(R.id.edt_search);
+        editText_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                     adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
 
 
@@ -150,8 +170,8 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
             //finish();
           //  return;
         }
-        searchView = (SearchView) findViewById(R.id.restsearch);
-        searchView.setOnQueryTextListener(this);
+
+
         progressDialog = new ProgressDialog(ResturantActivity.this);
         progressDialog.setTitle("T9 App");
         progressDialog.setMessage("Please wait...");
@@ -166,6 +186,17 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+                        @Override
+                        public void onProviderEnabled(@NonNull String provider) {
+
+                        }
+
+                        @Override
+                        public void onProviderDisabled(@NonNull String provider) {
+
+                        }
+
+
                         @Override
                         public void onStatusChanged(String provider, int status, Bundle extras) {
 
@@ -330,6 +361,13 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                 holder.rating.setText(s+"/5");
                 holder.category.setText(resturant.category);
                 holder.time.setText(resturant.timing);
+                if(!resturant.getImage().equals("")&&resturant.getImage()!=null)
+                {
+                    Glide.with(getApplicationContext())
+                            .load(resturant.getImage())
+
+                            .into(holder.picture);
+                }
                 holder.cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

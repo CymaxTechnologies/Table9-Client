@@ -16,8 +16,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.renderscript.RenderScript;
+import android.text.Editable;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.TextWatcher;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -32,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,6 +44,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.menuapp.Models.FoodType;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -58,6 +64,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
+    EditText search_edit_text;
     ExpandableListView expandableListView;
     HashMap<String,Cuisine> map=new HashMap<>();
     HashMap<String,Cuisine> allMap=new HashMap<>();
@@ -91,7 +98,7 @@ public class MainActivity extends AppCompatActivity  {
         resturant_id= getSharedPreferences("global",MODE_PRIVATE).getString("resturant_id", "123");
         resturant_name=(getSharedPreferences("global",MODE_PRIVATE).getString("name", "123"));
         table=getSharedPreferences("global",MODE_PRIVATE).getString("table", "waiting");
-        searchView=(androidx.appcompat.widget.SearchView )findViewById(R.id.search) ;
+        search_edit_text=(EditText)findViewById(R.id.edt_search) ;
         resturant_title=(TextView)findViewById(R.id.resturant_title);
         resturant_title.setText(resturant_name);
         cartCuisine.clear();
@@ -130,12 +137,7 @@ public class MainActivity extends AppCompatActivity  {
         });
 
 
-        searchView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchView.onActionViewExpanded();
-            }
-        });
+
 
           getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.logo_24);
@@ -295,17 +297,20 @@ public class MainActivity extends AppCompatActivity  {
         mainmenu.setHasFixedSize(true);
         mainmenu.setLayoutManager(new LinearLayoutManager(this));
         mainmenu.setAdapter(adp);
-        searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView .OnQueryTextListener() {
+        search_edit_text.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-               customExpandableAdapter.filter(newText);
-               expandAll();
-                return true;
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    customExpandableAdapter.filter(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 
@@ -570,10 +575,14 @@ public class MainActivity extends AppCompatActivity  {
               itemView.setPadding(0,0,0,100);
             }
             TextView name,description,availability;
-            ImageView picture;
+            ImageView picture,veg_non,veg_non_out;
+            FrameLayout frameLayout;
             final Button add,remove,text;
             RatingBar ratingBar;
             LinearLayout linearLayout=itemView.findViewById(R.id.edittextlinearlayout);
+            frameLayout=itemView.findViewById(R.id.frame);
+            veg_non_out=itemView.findViewById(R.id.veg_vector);
+            veg_non=itemView.findViewById(R.id.veg_pic);
             name=(TextView)itemView.findViewById(R.id.cousine_name);
             description=(TextView)itemView.findViewById(R.id.description);
             availability=(TextView)itemView.findViewById((R.id.about));
@@ -601,24 +610,35 @@ public class MainActivity extends AppCompatActivity  {
             ratingBar.setVisibility(View.GONE);
            if(!c.getPicture().equals(""))
            {
+               RequestOptions requestOptions = new RequestOptions();
+               requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
                Glide.with(getApplicationContext())
-                       .load(c.getPicture())
+                       .load(c.getPicture()).apply(requestOptions)
 
                        .into(picture);
                picture.setPadding(0,0,5,0);
-               ViewGroup.LayoutParams layoutParams=linearLayout.getLayoutParams();
-               layoutParams.width=220;
-               linearLayout.setLayoutParams(layoutParams);
+              
+               name.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+               veg_non_out.setVisibility(View.GONE);
+               name.setWidth(220);
+               if(c.veg_nonveg.equals("non_veg"))
+               {
+
+                   veg_non_out.setImageResource(R.drawable.nonveg_vector);
+               }
+
+               //linearLayout.setLayoutParams(layoutParams);
            }
            else
            {
-               picture.setVisibility(View.GONE);
-           }
-           if(c.veg_nonveg.equals("non_veg"))
-           {
+               if(c.veg_nonveg.equals("non_veg"))
+               {
 
-               name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.nonveg_vector, 0, 0, 0);
+                   veg_non_out.setImageResource(R.drawable.nonveg_vector);
+               }
+               frameLayout.setVisibility(View.GONE);
            }
+
             add.setOnClickListener(new View.OnClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
@@ -710,6 +730,11 @@ public class MainActivity extends AppCompatActivity  {
                 for(FoodType f:allFoodTYpes)
                 {
                     FoodType x = null;
+                    if(f.getName().contains(s))
+                    {
+                        foodTypes.add(f);
+                        continue;
+                    }
                     for(Cuisine c:f.getCuisines())
                     {
                         if(c.getCousine_name().toLowerCase().contains(s.toLowerCase()))

@@ -17,16 +17,20 @@
        android:layout_width="match_parent"
        android:layout_height="match_parent"
        android:orientation="vertical">
-
-      <androidx.appcompat.widget.SearchView
-          android:id="@+id/search"
+      <EditText
+          android:layout_marginBottom="5dp"
+          android:padding="10dp"
+          android:background="@drawable/bordered_edittext"
+          android:id="@+id/edt_search"
+          android:hint="Search for Cuisine or Dish"
+          android:drawableLeft="@drawable/search_24_black"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_margin="10dp"
-          android:tooltipText="Search Dish"
-          app:defaultQueryHint="Search dish"
-          android:background="@drawable/circle"
-          app:queryHint="Search Dish" />
+          android:layout_height="50dp">
+
+      </EditText>
+
+
+
       <androidx.cardview.widget.CardView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
