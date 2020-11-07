@@ -1,6 +1,7 @@
 package com.example.menuapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,13 +9,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.renderscript.RenderScript;
 import android.text.Editable;
 import android.text.Spannable;
@@ -44,9 +50,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.menuapp.Models.FoodType;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -64,6 +76,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
+    private static final int SYSTEM_ALERT_WINDOW_PERMISSION =1234 ;
     EditText search_edit_text;
     ExpandableListView expandableListView;
     HashMap<String,Cuisine> map=new HashMap<>();
@@ -87,11 +100,14 @@ public class MainActivity extends AppCompatActivity  {
     androidx.appcompat.widget.SearchView searchView;
     int count=0;
     ArrayList<Cuisine> all=new ArrayList<>();
+    Intent floating_view_service;
+    boolean buble_show;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        floating_view_service=new Intent(getApplicationContext(),FloatingViewService.class);
         user_name= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uname","123");
         user_phone_no= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uphone","123");
         user_email= PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("uemail","123");
@@ -105,6 +121,7 @@ public class MainActivity extends AppCompatActivity  {
         cartCount.clear();
         tcart.clear();
         tcount.clear();
+        buble_show=PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("show",true);
         expandableListView=(ExpandableListView)findViewById(R.id.expandablelistview);
         FirebaseDatabase.getInstance().getReference().child(resturant_id).child("cuisines").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -162,7 +179,7 @@ public class MainActivity extends AppCompatActivity  {
                     {
                         String table=dataSnapshot.getValue(String.class);
                         getSupportActionBar().setTitle("Table no "+table);
-                        Toast.makeText(getApplicationContext(),"You have assigned a table no "+table,Toast.LENGTH_LONG).show();
+                       // Toast.makeText(getApplicationContext(),"You have assigned a table no "+table,Toast.LENGTH_LONG).show();
                         //   startActivity(new Intent(getApplicationContext(),ResturantActivity.class));
 
                         return;
@@ -468,6 +485,8 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.mainmenu,menu);
+        menu.getItem(3).setChecked(buble_show);
+
         return true;
     }
 
@@ -489,10 +508,78 @@ public class MainActivity extends AppCompatActivity  {
             startActivity(new Intent(getApplicationContext(),My_Active_Orders_Activity.class));
 
         }
+        if(item.getItemId()==R.id.my_bubble)
+        {
+            if(item.isChecked())
+
+            {
+                item.setChecked(false);
+                SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                sharedPreferences.edit().putBoolean("show",false).apply();
+                stopService(floating_view_service);
+
+            }
+            else
+            {
+                item.setChecked(true);
+                SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                sharedPreferences.edit().putBoolean("show",true).apply();
+                startService(floating_view_service);
+            }
+        }
         return super.onOptionsItemSelected(item);
     }
+    private void startOurService() {
+        FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("my_orders").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()&&buble_show)
+                {
+                    if(!isMyServiceRunning(FloatingViewService.class))
+                    {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this)) {
+                            askPermission();
+                        }
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                            startService(floating_view_service);
+                            // finish();
+                        } else if (Settings.canDrawOverlays(MainActivity.this
+                        )) {
+                            startService(floating_view_service);
 
+                        } else {
+                            askPermission();
+                            Toast.makeText(MainActivity.this, "You need System Alert Window Permission to do this", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+                else
+                {
+                    stopService(floating_view_service);
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+    private void askPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION);
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
     // Before 2.0
 
     class CustomExpandableAdapter extends BaseExpandableListAdapter
@@ -575,7 +662,7 @@ public class MainActivity extends AppCompatActivity  {
               itemView.setPadding(0,0,0,100);
             }
             TextView name,description,availability;
-            ImageView picture,veg_non,veg_non_out;
+            final ImageView picture,veg_non,veg_non_out;
             FrameLayout frameLayout;
             final Button add,remove,text;
             RatingBar ratingBar;
@@ -614,10 +701,48 @@ public class MainActivity extends AppCompatActivity  {
                requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(16));
                Glide.with(getApplicationContext())
                        .load(c.getPicture()).apply(requestOptions)
+                       .apply(requestOptions)
 
                        .into(picture);
                picture.setPadding(0,0,5,0);
-              
+               final View view=LayoutInflater.from(MainActivity.this).inflate(R.layout.enlarg_image_layout,null);
+
+               final RequestOptions finalRequestOptions = requestOptions;
+               final RequestOptions finalRequestOptions1 = requestOptions;
+               picture.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       ImageView gifImageView = new ImageView(MainActivity.this);
+                       //T
+                       // oast.makeText(getApplicationContext(),c.getPicture(),Toast.LENGTH_LONG).show();
+                        final View view=LayoutInflater.from(MainActivity.this).inflate(R.layout.enlarg_image_layout,null);
+                       Glide.with(MainActivity.this).load(c.getPicture()).into(gifImageView);
+
+                       AlertDialog.Builder share_dialog = new AlertDialog.Builder(MainActivity.this);
+                       share_dialog.setView(view);
+                       share_dialog.show();
+                       Glide.with(MainActivity.this)
+                               .asBitmap()
+                               .load(c.getPicture())
+
+                               .into(new SimpleTarget<Bitmap>() {
+                                   @Override
+                                   public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                       ImageView imageView=(ImageView)view.findViewById(R.id.imageView);
+
+                                       imageView.setImageBitmap(resource);
+                                   }});
+
+                      // imageView.setImageDrawable(picture.getDrawable());
+
+
+
+                   }
+               });
+
+
+
+
                name.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
                veg_non_out.setVisibility(View.GONE);
                name.setWidth(220);
@@ -730,7 +855,7 @@ public class MainActivity extends AppCompatActivity  {
                 for(FoodType f:allFoodTYpes)
                 {
                     FoodType x = null;
-                    if(f.getName().contains(s))
+                    if(f.getName().toLowerCase().contains(s.toLowerCase()))
                     {
                         foodTypes.add(f);
                         continue;

@@ -83,6 +83,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
     Intent floating_view_service;
     EditText editText_search;
     private static final int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
+    boolean buble_show;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +98,8 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(ResturantActivity.this));
         recyclerView.setAdapter(adapter);
+        buble_show=PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("show",false);
+      //  Toast.makeText(getApplicationContext(),Boolean.toString(buble_show),Toast.LENGTH_LONG).show();
         AppExecuter.getInstance().getDiskio().execute(new Runnable() {
             @Override
             public void run() {
@@ -125,43 +128,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
         });
 
 
-
-
-
-        FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("my_orders").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists())
-                {
-                    if(!isMyServiceRunning(FloatingViewService.class))
-                    {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(ResturantActivity.this)) {
-                            askPermission();
-                        }
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                            startService(floating_view_service);
-                            // finish();
-                        } else if (Settings.canDrawOverlays(ResturantActivity.this
-                        )) {
-                            startService(floating_view_service);
-
-                        } else {
-                            askPermission();
-                            Toast.makeText(ResturantActivity.this, "You need System Alert Window Permission to do this", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-                else
-                {
-                    stopService(floating_view_service);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        startOurService();
         FirebaseMessaging.getInstance().subscribeToTopic("all");
         String resturant_id = getSharedPreferences("global", MODE_PRIVATE).getString("resturant_id", "123");
         if (!resturant_id.equals("123")) {
@@ -311,6 +278,43 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
 
     }
 
+    private void startOurService() {
+        FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("my_orders").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()&&buble_show)
+                {
+                    if(!isMyServiceRunning(FloatingViewService.class))
+                    {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(ResturantActivity.this)) {
+                            askPermission();
+                        }
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                            startService(floating_view_service);
+                            // finish();
+                        } else if (Settings.canDrawOverlays(ResturantActivity.this
+                        )) {
+                            startService(floating_view_service);
+
+                        } else {
+                            askPermission();
+                            Toast.makeText(ResturantActivity.this, "You need System Alert Window Permission to do this", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+                else
+                {
+                    stopService(floating_view_service);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
@@ -367,6 +371,10 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
                             .load(resturant.getImage())
 
                             .into(holder.picture);
+                }
+                else
+                {
+                    holder.picture.setImageResource(R.drawable.resturant_dummy);
                 }
                 holder.cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -437,6 +445,7 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.mainmenu,menu);
+        menu.getItem(3).setChecked(buble_show);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -456,6 +465,33 @@ public class ResturantActivity extends AppCompatActivity implements SearchView.O
         {
             startActivity(new Intent(getApplicationContext(),My_Active_Orders_Activity.class));
 
+        }
+        if(item.getItemId()==R.id.my_bubble)
+        {
+
+            //Toast.makeText(getApplicationContext(),"checked",Toast.LENGTH_LONG).show();
+
+
+            if(item.isChecked())
+
+            {buble_show=false;
+           // Toast.makeText(getApplicationContext(),"checked",Toast.LENGTH_LONG).show();
+            item.setChecked(false);
+                SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                sharedPreferences.edit().putBoolean("show",false).commit();
+                stopService(floating_view_service);
+            }
+            else
+            {
+
+                item.setChecked(true);
+               // Toast.makeText(getApplicationContext(),"Unchecked",Toast.LENGTH_LONG).show();
+                startOurService();
+                buble_show=true;
+                SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                sharedPreferences.edit().putBoolean("show",true).commit();
+            }
+            //return true;
         }
         return super.onOptionsItemSelected(item);
     }

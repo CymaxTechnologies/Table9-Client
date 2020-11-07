@@ -68,6 +68,7 @@ public class WaitingActivity extends AppCompatActivity {
     ArrayList<Order> list=new ArrayList<>();
     Intent floating_view_service;
     Order orderx;
+    boolean show_buble;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +99,7 @@ public class WaitingActivity extends AppCompatActivity {
         waiti.setEnabled(false);
         cuti.setEnabled(false);
         repi.setEnabled(false);
+        show_buble=PreferenceManager.getDefaultSharedPreferences(WaitingActivity.this).getBoolean("show",false);
         pay.setBackgroundColor(Color.GRAY);
         TextView titler=(TextView) findViewById(R.id.resturant_title);
         titler.setText(resturant_name);
@@ -144,12 +146,12 @@ public class WaitingActivity extends AppCompatActivity {
 
                         table=s;
                         table_no_image.setImageResource(R.drawable.accepted_icon);
-                        table_no_textview.setText("You have been assigned table no "+Integer.parseInt(s));
+                      //  table_no_textview.setText("You have been assigned table no "+Integer.parseInt(s));
 
                         FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("my_orders").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if(dataSnapshot.exists())
+                                if(dataSnapshot.exists()&&show_buble)
                                 {
                                     if(!isMyServiceRunning(FloatingViewService.class))
                                     {
@@ -464,4 +466,5 @@ public class WaitingActivity extends AppCompatActivity {
         }
         return false;
     }
+
 }
