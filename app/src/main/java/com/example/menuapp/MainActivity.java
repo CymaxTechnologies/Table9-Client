@@ -28,12 +28,15 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -290,7 +293,7 @@ public class MainActivity extends AppCompatActivity  {
                    i.putExtra("cartC",cartCount);
                   // FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("items").setValue(cartCuisine);
                    //FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("cart").child(resturant_id).child("count").setValue(cartCount);
-                   finish();
+                  // finish();
 
 
 
@@ -720,6 +723,13 @@ public class MainActivity extends AppCompatActivity  {
 
                        AlertDialog.Builder share_dialog = new AlertDialog.Builder(MainActivity.this);
                        share_dialog.setView(view);
+
+                       Window window = share_dialog.create().getWindow();
+                       WindowManager.LayoutParams wlp = window.getAttributes();
+
+                       wlp.gravity = Gravity.BOTTOM;
+                       wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+                       window.setAttributes(wlp);
                        share_dialog.show();
                        Glide.with(MainActivity.this)
                                .asBitmap()

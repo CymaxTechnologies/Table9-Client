@@ -84,12 +84,14 @@
 
 
       </androidx.cardview.widget.CardView>
+
       <ExpandableListView
-          android:scrollbars="none"
+          android:id="@+id/expandablelistview"
 
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:id="@+id/expandablelistview"></ExpandableListView>
+          android:scrollbars="none"></ExpandableListView>
+
       <ScrollView
           android:layout_width="match_parent"
           android:layout_height="match_parent"

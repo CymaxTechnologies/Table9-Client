@@ -107,7 +107,7 @@ public class MyOrdersAdapter extends RecyclerView.Adapter<MyOrdersAdapter.holder
                    I.putExtra("name",order.getResturant_name());
 
                    I.putExtra("name",order.getResturant_name());
-
+                   I.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                    I.putExtra("order_id",order.getOrder_id());
                    I.putExtra("order",order);
                    c.startActivity(I);

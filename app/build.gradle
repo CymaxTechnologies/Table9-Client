@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file("C:\\Users\\User\\Desktop\\MenuAppKeyNew.jks" )
+            storePassword "Ankush"
+            keyAlias "Ank"
+            keyPassword "Ankush"
+        }
+    }
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
